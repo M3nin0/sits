@@ -36,16 +36,18 @@
                                     start_date,
                                     end_date) {
 
+  file_info <- lapply(data_dir, function(data_dir_row) {
     # list the files in the data directory
-    img_files <- list.files(data_dir)
+    img_files <- list.files(data_dir_row)
 
     # how many of those files are images?
     # retrieve the known file extensions
     file_ext <- .sits_config_img_file_ext()
+
     # filter by extension
     matches <- purrr::map(file_ext, function(ext) {
-          img_files[grepl(ext, img_files)]
-      })
+      img_files[grepl(ext, img_files)]
+    })
     # get only valid files
     img_files <- unlist(matches)
 
@@ -54,54 +56,54 @@
     # split the file names
     img_files_lst <- strsplit(img_files_noext, split = "_")
     # joint the list into a tibble
-    img_files_tb <- suppressWarnings(
-      tibble::as_tibble(
-        do.call(rbind, img_files_lst)
-        )
-      )
+    img_files_tb <- suppressWarnings(tibble::as_tibble(do.call(rbind, img_files_lst)))
     # read the image files into a tibble with added parse info
     colnames(img_files_tb) <- parse_info
 
     # get the information on the required bands, dates and path
     info_tb <- img_files_tb %>%
-        # select the relevant parts
-        dplyr::select(date, band) %>%
-        # check the date format
-        .sits_timeline_date_format() %>%
-        # include path in the tibble
-        dplyr::mutate(path = paste0(data_dir, "/", img_files)) %>%
-        # order by dates
-        dplyr::arrange(date) %>%
-        # filter to remove duplicate combinations of file and band
-        dplyr::distinct(band, date, .keep_all = TRUE)
+      # select the relevant parts
+      dplyr::select(date, band) %>%
+      # check the date format
+      .sits_timeline_date_format() %>%
+      # include path in the tibble
+      dplyr::mutate(path = paste0(data_dir_row, "/", img_files)) %>%
+      # order by dates
+      dplyr::arrange(date) %>%
+      # filter to remove duplicate combinations of file and band
+      dplyr::distinct(band, date, .keep_all = TRUE)
 
     # extract the band names
     bands_files <- dplyr::pull(dplyr::distinct(info_tb, band))
 
     # convert the names of the bands to those used by SITS
-    bands_sits <- .sits_config_bands_convert(satellite, sensor, bands_files)
+    bands_sits <-
+      .sits_config_bands_convert(satellite, sensor, bands_files)
 
     # convert the band names to SITS bands
     info_tb <- dplyr::mutate(info_tb, band = bands_sits[band])
 
     # filter bands
     if (!purrr::is_null(bands)) {
-        # get the bands of the cube
-        bands_info <- dplyr::pull(dplyr::distinct(info_tb, band))
-        # verify that the requested bands exist
-        assertthat::assert_that(all(bands %in% bands_info),
-                    msg = "requested bands not available in cube")
-        # select the requested bands
-        info_tb <- dplyr::filter(info_tb, band %in% bands)
+      # get the bands of the cube
+      bands_info <- dplyr::pull(dplyr::distinct(info_tb, band))
+      # verify that the requested bands exist
+      assertthat::assert_that(all(bands %in% bands_info),
+                              msg = "requested bands not available in cube")
+      # select the requested bands
+      info_tb <- dplyr::filter(info_tb, band %in% bands)
     }
     # filter start and end dates
     if (!purrr::is_null(start_date) & !purrr::is_null(end_date)) {
-        info_tb <- dplyr::filter(info_tb,
-                                 date >= start_date & date <= end_date)
+      info_tb <- dplyr::filter(info_tb,
+                               date >= start_date &
+                                 date <= end_date)
 
     }
+    info_tb
+  })
 
-    return(info_tb)
+  return(dplyr::bind_rows(file_info))
 }
 #' @title Create a stack cube from a set of files
 #' @name .sits_raster_stack_cube
