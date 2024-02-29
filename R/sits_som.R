@@ -94,6 +94,8 @@ sits_som_map <- function(data,
                          distance = "euclidean",
                          som_radius = 2,
                          mode = "online") {
+    # register custom distances
+    .som_register_custom_distances()
     # set caller to show in errors
     .check_set_caller("sits_som_map")
     # verifies if kohonen package is installed

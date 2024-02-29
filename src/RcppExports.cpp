@@ -260,6 +260,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rlang_env_unlock
+void rlang_env_unlock(SEXPREC* env);
+RcppExport SEXP _sits_rlang_env_unlock(SEXP envSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXPREC* >::type env(envSEXP);
+    rlang_env_unlock(env);
+    return R_NilValue;
+END_RCPP
+}
+// rlang_env_lock
+void rlang_env_lock(SEXPREC* env);
+RcppExport SEXP _sits_rlang_env_lock(SEXP envSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXPREC* >::type env(envSEXP);
+    rlang_env_lock(env);
+    return R_NilValue;
+END_RCPP
+}
 // sample_points_inclusion
 NumericMatrix sample_points_inclusion(const NumericMatrix& polymatrix, const int n_sam_pol);
 RcppExport SEXP _sits_sample_points_inclusion(SEXP polymatrixSEXP, SEXP n_sam_polSEXP) {
@@ -465,6 +485,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_C_nnls_solver_batch", (DL_FUNC) &_sits_C_nnls_solver_batch, 5},
     {"_sits_C_normalize_data", (DL_FUNC) &_sits_C_normalize_data, 3},
     {"_sits_C_normalize_data_0", (DL_FUNC) &_sits_C_normalize_data_0, 3},
+    {"_sits_rlang_env_unlock", (DL_FUNC) &_sits_rlang_env_unlock, 1},
+    {"_sits_rlang_env_lock", (DL_FUNC) &_sits_rlang_env_lock, 1},
     {"_sits_sample_points_inclusion", (DL_FUNC) &_sits_sample_points_inclusion, 2},
     {"_sits_sample_points_crossings", (DL_FUNC) &_sits_sample_points_crossings, 2},
     {"_sits_sample_points_bin", (DL_FUNC) &_sits_sample_points_bin, 2},

@@ -77,6 +77,14 @@ C_normalize_data_0 <- function(data, min, max) {
     .Call(`_sits_C_normalize_data_0`, data, min, max)
 }
 
+rlang_env_unlock <- function(env) {
+    invisible(.Call(`_sits_rlang_env_unlock`, env))
+}
+
+rlang_env_lock <- function(env) {
+    invisible(.Call(`_sits_rlang_env_lock`, env))
+}
+
 sample_points_inclusion <- function(polymatrix, n_sam_pol) {
     .Call(`_sits_sample_points_inclusion`, polymatrix, n_sam_pol)
 }
