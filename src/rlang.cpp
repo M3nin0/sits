@@ -7,7 +7,6 @@ using namespace Rcpp;
  * dependencies.
  */
 #define FRAME_LOCK_MASK (1 << 14)
-#define FRAME_IS_LOCKED(e) (ENVFLAGS(e) & FRAME_LOCK_MASK)
 #define UNLOCK_FRAME(e) SET_ENVFLAGS(e, ENVFLAGS(e) & (~FRAME_LOCK_MASK))
 
 // [[Rcpp::export]]
