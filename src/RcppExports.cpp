@@ -141,6 +141,64 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// step_pattern_factory_symmetric2
+arma::mat step_pattern_factory_symmetric2();
+RcppExport SEXP _sits_step_pattern_factory_symmetric2() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(step_pattern_factory_symmetric2());
+    return rcpp_result_gen;
+END_RCPP
+}
+// local_cost_matrix
+arma::mat local_cost_matrix(arma::mat mat_a, arma::mat mat_b);
+RcppExport SEXP _sits_local_cost_matrix(SEXP mat_aSEXP, SEXP mat_bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type mat_a(mat_aSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type mat_b(mat_bSEXP);
+    rcpp_result_gen = Rcpp::wrap(local_cost_matrix(mat_a, mat_b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// windowing_factory_no_window
+arma::imat windowing_factory_no_window(int n);
+RcppExport SEXP _sits_windowing_factory_no_window(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(windowing_factory_no_window(n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// initialize_cost_matrix
+arma::mat initialize_cost_matrix(arma::mat local_cost);
+RcppExport SEXP _sits_initialize_cost_matrix(SEXP local_costSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type local_cost(local_costSEXP);
+    rcpp_result_gen = Rcpp::wrap(initialize_cost_matrix(local_cost));
+    return rcpp_result_gen;
+END_RCPP
+}
+// distance_dtw_op
+double distance_dtw_op(arma::imat wm, arma::mat lm, arma::mat cm, arma::mat dir);
+RcppExport SEXP _sits_distance_dtw_op(SEXP wmSEXP, SEXP lmSEXP, SEXP cmSEXP, SEXP dirSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::imat >::type wm(wmSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type lm(lmSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type cm(cmSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dir(dirSEXP);
+    rcpp_result_gen = Rcpp::wrap(distance_dtw_op(wm, lm, cm, dir));
+    return rcpp_result_gen;
+END_RCPP
+}
 // dtw
 Rcpp::XPtr<DistanceFunctionPtr> dtw();
 RcppExport SEXP _sits_dtw() {
@@ -475,6 +533,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_C_kernel_max", (DL_FUNC) &_sits_C_kernel_max, 5},
     {"_sits_C_kernel_var", (DL_FUNC) &_sits_C_kernel_var, 5},
     {"_sits_C_kernel_modal", (DL_FUNC) &_sits_C_kernel_modal, 5},
+    {"_sits_step_pattern_factory_symmetric2", (DL_FUNC) &_sits_step_pattern_factory_symmetric2, 0},
+    {"_sits_local_cost_matrix", (DL_FUNC) &_sits_local_cost_matrix, 2},
+    {"_sits_windowing_factory_no_window", (DL_FUNC) &_sits_windowing_factory_no_window, 1},
+    {"_sits_initialize_cost_matrix", (DL_FUNC) &_sits_initialize_cost_matrix, 1},
+    {"_sits_distance_dtw_op", (DL_FUNC) &_sits_distance_dtw_op, 4},
     {"_sits_dtw", (DL_FUNC) &_sits_dtw, 0},
     {"_sits_C_label_max_prob", (DL_FUNC) &_sits_C_label_max_prob, 1},
     {"_sits_linear_interp", (DL_FUNC) &_sits_linear_interp, 1},

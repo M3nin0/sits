@@ -1,4 +1,5 @@
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
 
 #include <cstdlib>
 #include <vector>
@@ -8,47 +9,139 @@
 
 #include "./sits_types.h"
 
+extern "C"
+{
+#include "./kohonen_dtw_distance.h"
+}
+
 using namespace Rcpp;
 
+
 /**
- * Compute the p-norm distance between two 1D C++ vectors.
+ * Create a `symmetric2` step pattern matrix.
  *
  * @description
- * The p-norm, also known as the Minkowski norm, is a generalized norm
- * calculation that includes several types of distances based on the value of p.
+ * This function calculates the `symmetric2` step pattern matrix
+ * as defined in the `dtw` package.
  *
- * Common values of p include:
+ * @note
+ * For more information on this step pattern, visit the `dtw` package
+ * documentation: https://www.rdocumentation.org/packages/dtw/versions/1.23-1/topics/stepPattern
  *
- *  - p = 1 for the Manhattan (city block) distance;
- *  - p = 2 for the Euclidean norm (distance).
+ * @reference
+ * Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping
+ * Alignments in R: The dtw Package. Journal of Statistical Software, 31(7),
+ * 1–24. https://doi.org/10.18637/jss.v031.i07
  *
- * More details about p-norms can be found on Wikipedia:
- * https://en.wikipedia.org/wiki/Norm_(mathematics)#p-norm
- *
- * @param a A 1D vector representing the first point in an m-dimensional space.
- * @param b A 1D vector representing the second point in an m-dimensional space.
- * @param p The value of the norm to use, determining the type of distance
- *          calculated.
- *
- * @note Both vectors 'a' and 'b' must have the same number of dimensions.
- * @note This function was adapted from the DTW implementation found at:
- *       https://github.com/cjekel/DTW_cpp
- *
- * @return The p-norm distance between vectors 'a' and 'b'.
+ * @return NumericMatrix of the `symmetric2` step pattern.
  */
-double p_norm(std::vector<double> a, std::vector<double> b, double p)
+// [[Rcpp::export]]
+arma::mat step_pattern_factory_symmetric2()
 {
-    double d = 0;
+    static arma::mat m;
 
-    size_t index;
-    size_t a_size = a.size();
+    if (m.n_elem == 0)
+    {                     // Populates matrix with `symmetric2` step pattern.
+        m.set_size(6, 4);
+        m.fill(arma::fill::zeros);
 
-    for (index = 0; index < a_size; index++)
-    {
-        d += std::pow(std::abs(a[index] - b[index]), p);
+        // Values extracted from `dtw` package.
+        m.row(0) = arma::vec({1, 1, 1, -1}).t();
+        m.row(1) = arma::vec({1, 0, 0, 2}).t();
+        m.row(2) = arma::vec({2, 0, 1, -1}).t();
+        m.row(3) = arma::vec({2, 0, 0, 1}).t();
+        m.row(4) = arma::vec({3, 1, 0, -1}).t();
+        m.row(5) = arma::vec({3, 0, 0, 1}).t();
     }
-    return std::pow(d, 1.0 / p);
+
+    return m;
 }
+
+
+/**
+ * Create a local cost matrix using `Euclidean` distance.
+ *
+ * @description
+ * This function calculates the cross-distance matrix between two vectors.
+ *
+ * @reference
+ * Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping
+ * Alignments in R: The dtw Package. Journal of Statistical Software, 31(7),
+ * 1–24. https://doi.org/10.18637/jss.v031.i07
+ *
+ * @return NumericMatrix with a local cost between two vectors.
+ */
+// [[Rcpp::export]]
+arma::mat local_cost_matrix(arma::mat mat_a, arma::mat mat_b)
+{
+    // Create column and row vectors for broadcasting
+    arma::mat A_mat = arma::repmat(mat_a, 1, mat_a.n_elem);
+    arma::mat B_mat = arma::repmat(mat_b.t(), mat_b.n_elem, 1);
+
+    // Compute the absolute differences using matrix operations
+    arma::mat local_cost = arma::abs(A_mat - B_mat);
+
+    return local_cost;
+}
+
+
+/**
+ * Create `No Window` windowing function
+ *
+ * @description
+ * This function implements the windowing function `NoWindow` presented on the
+ * `dtw` package.
+ *
+ * @reference
+ * Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping
+ * Alignments in R: The dtw Package. Journal of Statistical Software, 31(7),
+ * 1–24. https://doi.org/10.18637/jss.v031.i07
+ *
+ * @return LogicalMatrix representing the `No Window` function.
+ */
+// [[Rcpp::export]]
+arma::imat windowing_factory_no_window(int n)
+{
+    static arma::imat m;
+
+    if (m.n_elem == 0)
+    {
+        m.set_size(n, n);
+        m.fill(arma::fill::ones);
+    }
+
+    return m;
+}
+
+
+/**
+ * Create a empty cost matrix.
+ *
+ * @description
+ * This function creates a cost matrix based on a local cost matrix.
+ *
+ * @reference
+ * Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping
+ * Alignments in R: The dtw Package. Journal of Statistical Software, 31(7),
+ * 1–24. https://doi.org/10.18637/jss.v031.i07
+ *
+ * @return NumericMatrix with NA values.
+ */
+// [[Rcpp::export]]
+arma::mat initialize_cost_matrix(arma::mat local_cost)
+{
+    int n = local_cost.n_rows;
+
+    // Initialize cm with NaN values
+    arma::mat cm(n, n);
+    cm.fill(NA_REAL);
+
+    // Assign value of local_cost(0, 0) to cm(0, 0)
+    cm(0, 0) = local_cost(0, 0);
+
+    return cm;
+}
+
 
 /**
  * Compute the Dynamic Time Warping (DTW) distance between two 2D C++ vectors.
@@ -62,63 +155,51 @@ double p_norm(std::vector<double> a, std::vector<double> b, double p)
  * For more information on DTW, visit:
  * https://en.wikipedia.org/wiki/Dynamic_time_warping
  *
- * @param a A 2D vector representing the first sequence
- * @param b A 2D vector representing the second sequence.
- * @param p The value of p-norm to use for distance calculation.
+ * @param wm A `LogicalVector` representing the restriction windowing function.
+ * @param lm A `NumericMatrix` with the cross-distances between two time-series.
+ * @param cm A `NumericMatrix` representing a global cost matrix.
+ * @param dir A `NumericMatrix` representing the step pattern applied.
  *
- * @throws std::invalid_argument If the dimensions of 'a' and 'b' do not match.
+ * @reference
+ * Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping
+ * Alignments in R: The dtw Package. Journal of Statistical Software, 31(7),
+ * 1–24. https://doi.org/10.18637/jss.v031.i07
  *
  * @note
- * Both vectors 'a', and 'b' should be structured as follows:
+ * The implementation of this DTW distance calculation was adapted from the
+ * `dtw` R package.
  *
- *  [number_of_data_points][number_of_dimensions]
- *
- * allowing the DTW distance computation to adapt to any p-norm value specified.
- *
- * @note The implementation of this DTW distance calculation was adapted from:
- *       https://github.com/cjekel/DTW_cpp
- *
- * @return The DTW distance between the two input sequences.
+ * @return The DTW distance.
  */
-double distance_dtw_op(std::vector<std::vector<double>> a,
-                       std::vector<std::vector<double>> b,
-                       double p)
+// [[Rcpp::export]]
+double distance_dtw_op(arma::imat wm, arma::mat lm, arma::mat cm, arma::mat dir)
 {
-    int n = a.size();
-    int o = b.size();
+    // Get problem size
+    int n = lm.n_rows;
 
-    int a_m = a[0].size();
-    int b_m = b[0].size();
+    // Get pattern size
+    int nsteps = dir.n_rows;
 
-    if (a_m != b_m)
-    {
-        throw std::invalid_argument(
-            "a and b must have the same number of dimensions!"
-        );
-    }
-    std::vector<std::vector<double>> d(n, std::vector<double>(o, 0.0));
+    // Cost matrix (input + output)
+    arma::mat cmo = cm;
 
-    d[0][0] = p_norm(a[0], b[0], p);
+    // sits: This output is not used, so we disable it's calculation
+    // Output 2: smo, INTEGER
+    // arma::mat smo(n, n);
 
-    for (int i = 1; i < n; i++)
-    {
-        d[i][0] = d[i - 1][0] + p_norm(a[i], b[0], p);
-    }
-    for (int i = 1; i < o; i++)
-    {
-        d[0][i] = d[0][i - 1] + p_norm(a[0], b[i], p);
-    }
-    for (int i = 1; i < n; i++)
-    {
-        for (int j = 1; j < o; j++)
-        {
-            d[i][j] = p_norm(a[i], b[j], p) + std::fmin(
-                std::fmin(d[i - 1][j], d[i][j - 1]), d[i - 1][j - 1]
-            );
-        }
-    }
-    return d[n - 1][o - 1];
+    // Dispatch to C
+    computeCM(
+        n,
+        wm.memptr(),
+        lm.memptr(),
+        &nsteps,
+        dir.memptr(),
+        cmo.memptr()
+    );
+
+    return cmo.at(n - 1, n - 1);
 }
+
 
 /**
  * Dynamic Time Warping (DTW) distance wrapper.
@@ -127,28 +208,37 @@ double distance_dtw_op(std::vector<std::vector<double>> a,
  * This function calculates prepare data from `Kohonen` package and calculate
  * the DTW distance between two array of points.
  *
- * @param a A 2D vector representing the first sequence.
- * @param b A 2D vector representing the second sequence.
- * @param np Number of points in vectors `a` and `b`.
- * @param nNA Number of NA values in the vectors `a` and `b`.
+ * @param p1 A 1D array representing the first time-series
+ * @param p2 A 1D array representing the second sequence.
+ * @param np Number of points in arrays `p1` and `p2`.
+ * @param nNA Number of NA values in the arrays `p1` and `p2`.
  *
  * @note The function signature was created following the `Kohonen` R package
  *        specifications for custom distance functions.
  *
- *
- * @return The DTW distance between the two input sequences.
+ * @return The DTW distance between two time-series.
  */
 double kohonen_dtw(double *p1, double *p2, int np, int nNA)
 {
-    std::vector<double> p1_data(p1, p1 + np);
-    std::vector<double> p2_data(p2, p2 + np);
+    arma::vec p1_mat(p1, np, false);
+    arma::vec p2_mat(p2, np, false);
 
-    std::vector<std::vector<double>> p1_vec = {p1_data};
-    std::vector<std::vector<double>> p2_vec = {p2_data};
+    // Local cost matrix
+    arma::mat lc_matrix = local_cost_matrix(p1_mat, p2_mat);
 
-    // p-norm fixed in 2 (equivalent to euclidean distance)
-    return (distance_dtw_op(p1_vec, p2_vec, 2));
+    // Step pattern matrix
+    arma::mat step_pattern = step_pattern_factory_symmetric2();
+
+    // Window function (in this case `No Window`)
+    arma::imat no_window = windowing_factory_no_window(np);
+
+    // Cost matrix
+    arma::mat cost_matrix = initialize_cost_matrix(lc_matrix);
+
+    return (distance_dtw_op(
+        no_window, lc_matrix, cost_matrix, step_pattern));
 }
+
 
 // [[Rcpp::export]]
 Rcpp::XPtr<DistanceFunctionPtr> dtw()
@@ -156,5 +246,5 @@ Rcpp::XPtr<DistanceFunctionPtr> dtw()
     // Returns a External Pointer, which is used by the `kohonen` package
     // https://cran.r-project.org/doc/manuals/R-exts.html#External-pointers-and-weak-references
     return (Rcpp::XPtr<DistanceFunctionPtr>(new DistanceFunctionPtr(
-            &kohonen_dtw)));
+        &kohonen_dtw)));
 }
