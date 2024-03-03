@@ -141,6 +141,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// dtw2vec
+double dtw2vec(const arma::vec& x, const arma::vec& y);
+RcppExport SEXP _sits_dtw2vec(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(dtw2vec(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // dtw
 Rcpp::XPtr<DistanceFunctionPtr> dtw();
 RcppExport SEXP _sits_dtw() {
@@ -475,6 +487,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_C_kernel_max", (DL_FUNC) &_sits_C_kernel_max, 5},
     {"_sits_C_kernel_var", (DL_FUNC) &_sits_C_kernel_var, 5},
     {"_sits_C_kernel_modal", (DL_FUNC) &_sits_C_kernel_modal, 5},
+    {"_sits_dtw2vec", (DL_FUNC) &_sits_dtw2vec, 2},
     {"_sits_dtw", (DL_FUNC) &_sits_dtw, 0},
     {"_sits_C_label_max_prob", (DL_FUNC) &_sits_C_label_max_prob, 1},
     {"_sits_linear_interp", (DL_FUNC) &_sits_linear_interp, 1},

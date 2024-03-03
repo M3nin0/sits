@@ -37,6 +37,10 @@ C_kernel_modal <- function(x, ncols, nrows, band, window_size) {
     .Call(`_sits_C_kernel_modal`, x, ncols, nrows, band, window_size)
 }
 
+dtw2vec <- function(x, y) {
+    .Call(`_sits_dtw2vec`, x, y)
+}
+
 dtw <- function() {
     .Call(`_sits_dtw`)
 }
