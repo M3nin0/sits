@@ -54,9 +54,11 @@
 #' @param som_radius     Radius of SOM neighborhood.
 #' @param mode           Type of learning algorithm (default = "online").
 #'
-#' @note The sits package implements the \code{"dtw"} (Dynamic Time Warping)
-#'       similarity measure. All other similarity measurements are from
-#'       the \code{\link[kohonen:supersom]{kohonen::supersom (dist.fcts)}}
+#' @note The \code{sits} package implements the \code{"dtw"} (Dynamic Time
+#'       Warping) similarity measure using the vector-based DTW algorithm
+#'       from the \code{IncDTW} R package. All other similarity measurements
+#'       come from the
+#'       \code{\link[kohonen:supersom]{kohonen::supersom (dist.fcts)}}
 #'       function.
 #'
 #' @return

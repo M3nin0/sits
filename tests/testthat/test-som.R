@@ -1,3 +1,19 @@
+test_that("Calculating time-series distances using DTW", {
+    # test 1 (example from `IncDTW` article)
+    t1 <- c(3, 4, 5, 6)
+    t2 <- c(1, 3, 3, 5, 6)
+
+    expect_equal(dtw2vec(t1, t2), 3)
+
+    # test 2 (using ndvi time-series)
+    t1 <- c(0.5001, 0.5060, 0.5079, 0.7141, 0.4262)
+    t2 <- c(0.3974, 0.5144, 0.5052, 0.6463, 0.5139)
+
+    # 0.4323 -> Value confirmed using `dtw` and `IncDTW` packages as reference
+    expect_equal(dtw2vec(t1, t2), 0.4323)
+})
+
+
 test_that("Creating clustering using Self-organizing Maps with DTW distance", {
     set.seed(2903)
 
@@ -9,7 +25,7 @@ test_that("Creating clustering using Self-organizing Maps with DTW distance", {
     )
 
     expect_true(all(colnames(som_map$labelled_neurons) %in%
-        c("id_neuron", "label_samples", "count", "prior_prob", "post_prob")))
+                        c("id_neuron", "label_samples", "count", "prior_prob", "post_prob")))
 
     expect_true(som_map$labelled_neurons[1, ]$prior_prob >= 0)
     expect_true(som_map$labelled_neurons[1, ]$post_prob >= 0)
