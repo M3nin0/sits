@@ -1,3 +1,69 @@
+
+#' @title Train twdtw
+#' @name sits_twdtw
+#' @export
+#'
+sits_twdtw <- function(samples = NULL, pattern_freq = 8, pattern_formula = y ~ s(x), ...) {
+    train_fun <- function(samples) {
+        # TODO Include parameters validations
+        # Get labels (used later to ensure column order in result matrix)
+        labels <- .samples_labels(samples)
+        # Get predictors features
+        train_samples <- .predictors(samples)
+        # Get samples patterns
+        train_samples_patterns <- sits_patterns(samples, freq = pattern_freq, formula = pattern_formula)
+        train_samples_patterns$time_series <- lapply(train_samples_patterns$time_series, function(x) {
+            dplyr::rename(x, time = Index)
+        })
+
+        predict_fun <- function(values) {
+            # Used to check values (below)
+            input_pixels <- nrow(values)
+            input_attributes <- ncol(samples$time_series[[1]]) - 1
+            input_times <- ncol(values) / input_attributes
+
+            # Do classification
+            classes <-
+                do.call(rbind, lapply(1:input_pixels, function(row_index) {
+                    row_values <- values[row_index,]
+
+                    res <-
+                        t(sapply(1:input_times, function(attr_index) {
+                            start_col <- (attr_index - 1) * input_attributes + 1
+                            end_col <- attr_index * input_attributes
+                            row_values[start_col:end_col]
+                        }))
+
+                    res_df <-
+                        data.frame(time = samples$time_series[[1]]$Index, res)
+                    colnames(res_df) <-
+                        colnames(train_samples_patterns$time_series[[1]])
+
+                    distances <-
+                        as.numeric(unlist(
+                            lapply(train_samples_patterns$time_series, function(ts_pattern) {
+                                twdtw::twdtw(res_df, as.data.frame(ts_pattern), ...)
+                            })
+                        ))
+
+                    distances / sum(distances)
+                }))
+
+            return(classes)
+        }
+        # Set model class
+        predict_fun <- .set_class(
+            predict_fun, "twdtw_model", "sits_model", class(predict_fun)
+        )
+        return(predict_fun)
+    }
+    # If samples is informed, train a model and return a predict function
+    # Otherwise give back a train function to train model further
+    result <- .factory_function(samples, train_fun)
+    return(result)
+}
+
+
 #' @title Train random forest models
 #' @name sits_rfor
 #'
