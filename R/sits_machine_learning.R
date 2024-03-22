@@ -21,7 +21,7 @@ sits_twdtw <-
                 sits_patterns(samples, freq = pattern_freq, formula = pattern_formula)
             train_samples_patterns$time_series <-
                 lapply(train_samples_patterns$time_series, function(x) {
-                    x <- x |> dplyr::rename(time = Index)
+                    # x <- x |> dplyr::rename(time = Index)
 
                     if (!is.null(comparison_start) &&
                         !is.null(comparison_end)) {
@@ -32,6 +32,8 @@ sits_twdtw <-
 
                     x
                 })
+
+            train_samples_patterns_predictors <- .predictors(train_samples_patterns)
 
             predict_fun <- function(values) {
                 # Used to check values (below)
@@ -56,14 +58,42 @@ sits_twdtw <-
                         colnames(res_df) <-
                             colnames(train_samples_patterns$time_series[[1]])
 
+                        row_values <- as.matrix(row_values)
+
                         distances <-
                             as.numeric(unlist(
-                                lapply(train_samples_patterns$time_series, function(ts_pattern) {
-                                    twdtw::twdtw(res_df, as.data.frame(ts_pattern), ...)
+                                lapply(1:nrow(train_samples_patterns_predictors), function(ts_pattern_index) {
+                                    ts_pattern <- as.matrix(dplyr::select(train_samples_patterns_predictors[ts_pattern_index,], -sample_id, -label))
+
+                                    # twdtw::twdtw(res_df, as.data.frame(ts_pattern), ...)
+
+                                    # twdtwr::twdtw(
+                                    #     as.matrix(dplyr::select(res_df, -time)),
+                                    #     as.matrix(dplyr::select(ts_pattern, -time)),
+                                    #     ...
+                                    # )
+
+                                    twdtwr::twdtw(row_values, ts_pattern, ...)
                                 })
                             ))
 
-                        distances / sum(distances)
+                        # distances <-
+                        #     as.numeric(unlist(
+                        #         lapply(train_samples_patterns$time_series, function(ts_pattern) {
+                        #             # twdtw::twdtw(res_df, as.data.frame(ts_pattern), ...)
+                        #
+                        #             # twdtwr::twdtw(
+                        #             #     as.matrix(dplyr::select(res_df, -time)),
+                        #             #     as.matrix(dplyr::select(ts_pattern, -time)),
+                        #             #     ...
+                        #             # )
+                        #
+                        #             twdtwr::twdtw(row_values, )
+                        #         })
+                        #     ))
+
+                        # distances / sum(distances)
+                        (1 / distances) / sum(1 / distances)
                     }))
 
                 return(classes)
