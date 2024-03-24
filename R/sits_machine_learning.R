@@ -1,4 +1,113 @@
 
+
+
+#' @export
+#'
+parse_iso8601_duration <- function(duration_str) {
+    # Regular expression to extract the numerical value and the unit
+    matches <-
+        regmatches(duration_str, regexec("P(\\d+)([YMWD])", duration_str))
+
+    # Extracted parts
+    value <- as.integer(matches[[1]][2])
+    unit_char <- matches[[1]][3]
+
+    # Map of unit characters to their singular forms
+    unit_map <- list(Y = "year",
+                     M = "month",
+                     W = "week",
+                     D = "day")
+
+    # Get the singular form of the unit
+    unit_singular <- unit_map[[unit_char]]
+
+    return(list(value = value, unit = unit_singular))
+}
+
+#' @export
+#'
+generate_intervals <- function(start_date, end_date, period) {
+    intervals <- list()
+    current_start <- start_date
+
+    while (current_start < end_date) {
+        if (grepl("Y", period)) {
+            period_amount <- as.numeric(sub("Y", "", sub("P", "", period)))
+            current_end <-
+                min(
+                    current_start %m+% lubridate::years(period_amount) - lubridate::days(1),
+                    end_date
+                )
+        } else if (grepl("M", period)) {
+            period_amount <- as.numeric(sub("M", "", sub("P", "", period)))
+            current_end <-
+                min(
+                    current_start %m+% base::months(period_amount) - lubridate::days(1),
+                    end_date
+                )
+        } else if (grepl("D", period)) {
+            period_amount <- as.numeric(sub("D", "", sub("P", "", period)))
+            current_end <-
+                min(
+                    current_start + lubridate::days(period_amount) - lubridate::days(1),
+                    end_date
+                )
+        } else {
+            stop("Period format not recognized. Use 'PnY', 'PnM', or 'PnD'.")
+        }
+
+        intervals <-
+            c(intervals, list(c(current_start, current_end)))
+        current_start <- current_end + lubridate::days(1)
+    }
+
+    return(intervals)
+}
+
+#' @export
+#'
+calculate_overlap <-
+    function(start_date,
+             end_date,
+             period,
+             query_start,
+             query_end) {
+        start_date <- as.Date(start_date)
+        end_date <- as.Date(end_date)
+
+        intervals <-
+            generate_intervals(start_date, end_date, period)
+        query_start <- as.Date(query_start)
+        query_end <- as.Date(query_end)
+        total_overlap_days <- 0
+
+        for (interval in intervals) {
+            interval_start <- interval[[1]]
+            interval_end <- interval[[2]]
+
+            overlap_start <- max(interval_start, query_start)
+            overlap_end <- min(interval_end, query_end)
+
+            if (overlap_start <= overlap_end) {
+                # Calculate overlap in days
+                total_overlap_days <-
+                    total_overlap_days + as.integer(overlap_end - overlap_start + 1)
+            }
+        }
+
+        query_interval_days <-
+            as.integer(query_end - query_start + 1)
+        overlap_percentage <-
+            (total_overlap_days / query_interval_days) * 100
+
+        return(
+            list(
+                total_overlap_days = total_overlap_days,
+                overlap_percentage = overlap_percentage
+            )
+        )
+    }
+
 #' @title Train twdtw
 #' @name sits_twdtw
 #' @export
@@ -7,6 +116,10 @@ sits_twdtw <-
     function(samples = NULL,
              comparison_start = NULL,
              comparison_end = NULL,
+             overlap_start = NULL,
+             overlap_end = NULL,
+             overlap_step = NULL,
+             overlap_percentage = NULL,
              pattern_freq = 8,
              pattern_formula = y ~ s(x),
              ...) {
@@ -19,9 +132,13 @@ sits_twdtw <-
             # Get samples patterns
             train_samples_patterns <-
                 sits_patterns(samples, freq = pattern_freq, formula = pattern_formula)
+
+            overlap_step_params <-
+                parse_iso8601_duration(overlap_step)
+
             train_samples_patterns$time_series <-
                 lapply(train_samples_patterns$time_series, function(x) {
-                    # x <- x |> dplyr::rename(time = Index)
+                    x <- x |> dplyr::rename(time = Index)
 
                     if (!is.null(comparison_start) &&
                         !is.null(comparison_end)) {
@@ -33,12 +150,11 @@ sits_twdtw <-
                     x
                 })
 
-            train_samples_patterns_predictors <- .predictors(train_samples_patterns)
-
             predict_fun <- function(values) {
                 # Used to check values (below)
                 input_pixels <- nrow(values)
-                input_attributes <- ncol(samples$time_series[[1]]) - 1
+                input_attributes <-
+                    ncol(samples$time_series[[1]]) - 1
                 input_times <- ncol(values) / input_attributes
 
                 # Do classification
@@ -49,7 +165,8 @@ sits_twdtw <-
                         res <-
                             t(sapply(1:input_times, function(attr_index) {
                                 start_col <- (attr_index - 1) * input_attributes + 1
-                                end_col <- attr_index * input_attributes
+                                end_col <-
+                                    attr_index * input_attributes
                                 row_values[start_col:end_col]
                             }))
 
@@ -58,42 +175,56 @@ sits_twdtw <-
                         colnames(res_df) <-
                             colnames(train_samples_patterns$time_series[[1]])
 
-                        row_values <- as.matrix(row_values)
-
                         distances <-
                             as.numeric(unlist(
-                                lapply(1:nrow(train_samples_patterns_predictors), function(ts_pattern_index) {
-                                    ts_pattern <- as.matrix(dplyr::select(train_samples_patterns_predictors[ts_pattern_index,], -sample_id, -label))
-
+                                lapply(train_samples_patterns$time_series, function(ts_pattern) {
                                     # twdtw::twdtw(res_df, as.data.frame(ts_pattern), ...)
+                                    matches <- twdtw::twdtw(
+                                        x = res_df,
+                                        y = as.data.frame(ts_pattern),
+                                        origin = overlap_start,
+                                        cycle_length = overlap_step_params$value,
+                                        time_scale = overlap_step_params$unit,
+                                        output = "matches",
+                                        ...
+                                    )
 
-                                    # twdtwr::twdtw(
-                                    #     as.matrix(dplyr::select(res_df, -time)),
-                                    #     as.matrix(dplyr::select(ts_pattern, -time)),
-                                    #     ...
-                                    # )
+                                    matches_overlap <-
+                                        lapply(1:nrow(matches), function(match_index) {
+                                            query <- ts_pattern$time[matches[match_index, 1:2]]
+                                            query_start <- query[1]
+                                            query_end <- query[2]
 
-                                    twdtwr::twdtw(row_values, ts_pattern, ...)
+                                            result <-
+                                                calculate_overlap(
+                                                    overlap_start,
+                                                    overlap_end,
+                                                    overlap_step,
+                                                    query_start,
+                                                    query_end
+                                                )
+
+                                            result$overlap_percentage
+                                        })
+
+                                    matches_overlap <-
+                                        unlist(unlist(matches_overlap) / 100 > overlap_percentage)
+
+                                    if (all(!matches_overlap)) {
+                                        return(Inf)
+                                    }
+
+                                    matches <-
+                                        matches[, 3][matches_overlap]
+
+                                    min(matches)
                                 })
                             ))
 
-                        # distances <-
-                        #     as.numeric(unlist(
-                        #         lapply(train_samples_patterns$time_series, function(ts_pattern) {
-                        #             # twdtw::twdtw(res_df, as.data.frame(ts_pattern), ...)
-                        #
-                        #             # twdtwr::twdtw(
-                        #             #     as.matrix(dplyr::select(res_df, -time)),
-                        #             #     as.matrix(dplyr::select(ts_pattern, -time)),
-                        #             #     ...
-                        #             # )
-                        #
-                        #             twdtwr::twdtw(row_values, )
-                        #         })
-                        #     ))
-
                         # distances / sum(distances)
-                        (1 / distances) / sum(1 / distances)
+                        # (1 / distances) / sum(1 / distances)
+                        # (1 / distances) / sum(1 / distances) * sum(distances)
+                        as.numeric(distances == min(distances))
                     }))
 
                 return(classes)
@@ -436,8 +567,8 @@ sits_xgboost <- function(samples = NULL, learning_rate = 0.15,
             label = references)
         # train the model
         model <- xgboost::xgb.train(xgb_matrix,
-            num_class = length(labels), params = params,
-            nrounds = nrounds, verbose = verbose
+                                    num_class = length(labels), params = params,
+                                    nrounds = nrounds, verbose = verbose
         )
         # Get best ntreelimit
         ntreelimit <- model$best_ntreelimit
@@ -534,7 +665,7 @@ sits_formula_logref <- function(predictors_index = -2:0) {
         result_for <- stats::as.formula(paste0(
             "factor(label)~",
             paste0(paste0("log(`", categories, "`)"),
-                collapse = "+"
+                   collapse = "+"
             )
         ))
         return(result_for)
@@ -603,7 +734,7 @@ sits_formula_linear <- function(predictors_index = -2:0) {
         result_for <- stats::as.formula(paste0(
             "factor(label)~",
             paste0(paste0(categories,
-                collapse = "+"
+                          collapse = "+"
             ))
         ))
         return(result_for)
