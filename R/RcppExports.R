@@ -37,8 +37,12 @@ C_kernel_modal <- function(x, ncols, nrows, band, window_size) {
     .Call(`_sits_C_kernel_modal`, x, ncols, nrows, band, window_size)
 }
 
-dtw <- function() {
-    .Call(`_sits_dtw`)
+distance_dtw <- function(ts1, ts2) {
+    .Call(`_sits_distance_dtw`, ts1, ts2)
+}
+
+kohonen_dtw <- function() {
+    .Call(`_sits_kohonen_dtw`)
 }
 
 C_label_max_prob <- function(x) {

@@ -14,7 +14,7 @@
     rlang_env_unlock(kohonen_namespace)
 
     # include custom distances in the environment
-    base::assign("dtw", dtw, envir = kohonen_namespace)
+    base::assign("dtw", kohonen_dtw, envir = kohonen_namespace)
 
     # lock the environment
     rlang_env_lock(kohonen_namespace)

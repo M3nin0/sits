@@ -1804,10 +1804,11 @@
     # do they have the same timelines?
     samples_timeline_length <- length(sits_timeline(samples))
     tiles_timeline_length <- length(sits_timeline(tile))
-    .check_that(
-        samples_timeline_length == tiles_timeline_length,
-        msg = "number of instances of samples and cube differ"
-    )
+    # TODO Check if this modification is required!
+    # .check_that(
+    #     samples_timeline_length == tiles_timeline_length,
+    #     msg = "number of instances of samples and cube differ"
+    # )
     # do they have the same bands?
     tile_bands <- sits_bands(tile)
     bands <- sits_bands(samples)

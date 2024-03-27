@@ -141,13 +141,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// dtw
-Rcpp::XPtr<DistanceFunctionPtr> dtw();
-RcppExport SEXP _sits_dtw() {
+// distance_dtw
+double distance_dtw(const NumericMatrix& ts1, const NumericMatrix& ts2);
+RcppExport SEXP _sits_distance_dtw(SEXP ts1SEXP, SEXP ts2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(dtw());
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type ts1(ts1SEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type ts2(ts2SEXP);
+    rcpp_result_gen = Rcpp::wrap(distance_dtw(ts1, ts2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// kohonen_dtw
+Rcpp::XPtr<DistanceFunctionPtr> kohonen_dtw();
+RcppExport SEXP _sits_kohonen_dtw() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(kohonen_dtw());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -599,7 +611,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_C_kernel_max", (DL_FUNC) &_sits_C_kernel_max, 5},
     {"_sits_C_kernel_var", (DL_FUNC) &_sits_C_kernel_var, 5},
     {"_sits_C_kernel_modal", (DL_FUNC) &_sits_C_kernel_modal, 5},
-    {"_sits_dtw", (DL_FUNC) &_sits_dtw, 0},
+    {"_sits_distance_dtw", (DL_FUNC) &_sits_distance_dtw, 2},
+    {"_sits_kohonen_dtw", (DL_FUNC) &_sits_kohonen_dtw, 0},
     {"_sits_C_label_max_prob", (DL_FUNC) &_sits_C_label_max_prob, 1},
     {"_sits_linear_interp", (DL_FUNC) &_sits_linear_interp, 1},
     {"_sits_linear_interp_vec", (DL_FUNC) &_sits_linear_interp_vec, 1},

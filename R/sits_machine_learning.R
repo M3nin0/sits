@@ -1,230 +1,72 @@
-
-
-
-#' @export
-#'
-parse_iso8601_duration <- function(duration_str) {
-    # Regular expression to extract the numerical value and the unit
-    matches <-
-        regmatches(duration_str, regexec("P(\\d+)([YMWD])", duration_str))
-
-    # Extracted parts
-    value <- as.integer(matches[[1]][2])
-    unit_char <- matches[[1]][3]
-
-    # Map of unit characters to their singular forms
-    unit_map <- list(Y = "year",
-                     M = "month",
-                     W = "week",
-                     D = "day")
-
-    # Get the singular form of the unit
-    unit_singular <- unit_map[[unit_char]]
-
-    return(list(value = value, unit = unit_singular))
-}
-
-#' @export
-#'
-generate_intervals <- function(start_date, end_date, period) {
-    intervals <- list()
-    current_start <- start_date
-
-    while (current_start < end_date) {
-        if (grepl("Y", period)) {
-            period_amount <- as.numeric(sub("Y", "", sub("P", "", period)))
-            current_end <-
-                min(
-                    current_start %m+% lubridate::years(period_amount) - lubridate::days(1),
-                    end_date
-                )
-        } else if (grepl("M", period)) {
-            period_amount <- as.numeric(sub("M", "", sub("P", "", period)))
-            current_end <-
-                min(
-                    current_start %m+% base::months(period_amount) - lubridate::days(1),
-                    end_date
-                )
-        } else if (grepl("D", period)) {
-            period_amount <- as.numeric(sub("D", "", sub("P", "", period)))
-            current_end <-
-                min(
-                    current_start + lubridate::days(period_amount) - lubridate::days(1),
-                    end_date
-                )
-        } else {
-            stop("Period format not recognized. Use 'PnY', 'PnM', or 'PnD'.")
-        }
-
-        intervals <-
-            c(intervals, list(c(current_start, current_end)))
-        current_start <- current_end + lubridate::days(1)
-    }
-
-    return(intervals)
-}
-
-#' @export
-#'
-calculate_overlap <-
-    function(start_date,
-             end_date,
-             period,
-             query_start,
-             query_end) {
-        start_date <- as.Date(start_date)
-        end_date <- as.Date(end_date)
-
-        intervals <-
-            generate_intervals(start_date, end_date, period)
-        query_start <- as.Date(query_start)
-        query_end <- as.Date(query_end)
-        total_overlap_days <- 0
-
-        for (interval in intervals) {
-            interval_start <- interval[[1]]
-            interval_end <- interval[[2]]
-
-            overlap_start <- max(interval_start, query_start)
-            overlap_end <- min(interval_end, query_end)
-
-            if (overlap_start <= overlap_end) {
-                # Calculate overlap in days
-                total_overlap_days <-
-                    total_overlap_days + as.integer(overlap_end - overlap_start + 1)
-            }
-        }
-
-        query_interval_days <-
-            as.integer(query_end - query_start + 1)
-        overlap_percentage <-
-            (total_overlap_days / query_interval_days) * 100
-
-        return(
-            list(
-                total_overlap_days = total_overlap_days,
-                overlap_percentage = overlap_percentage
-            )
-        )
-    }
-
 #' @title Train twdtw
 #' @name sits_twdtw
 #' @export
 #'
 sits_twdtw <-
-    function(samples = NULL,
-             comparison_start = NULL,
-             comparison_end = NULL,
-             overlap_start = NULL,
-             overlap_end = NULL,
-             overlap_step = NULL,
-             overlap_percentage = NULL,
-             pattern_freq = 8,
-             pattern_formula = y ~ s(x),
-             ...) {
+    function(samples = NULL, ...) {
         train_fun <- function(samples) {
-            # TODO Include parameters validations
             # Get labels (used later to ensure column order in result matrix)
             labels <- .samples_labels(samples)
             # Get predictors features
             train_samples <- .predictors(samples)
-            # Get samples patterns
+            # Get bands available in the samples
+            train_samples_bands <- paste0("(",
+                                          paste(sits_bands(samples), collapse = "|"),
+                                          ")")
+            # Get predictors names
+            train_samples_bands_preds <- names(train_samples)
+            train_samples_bands_preds <-
+                train_samples_bands_preds[3:length(train_samples_bands_preds)]
+
+            # Get samples patterns (temporal median)
             train_samples_patterns <-
-                sits_patterns(samples, freq = pattern_freq, formula = pattern_formula)
-
-            overlap_step_params <-
-                parse_iso8601_duration(overlap_step)
-
-            train_samples_patterns$time_series <-
-                lapply(train_samples_patterns$time_series, function(x) {
-                    x <- x |> dplyr::rename(time = Index)
-
-                    if (!is.null(comparison_start) &&
-                        !is.null(comparison_end)) {
-                        x <-
-                            x |> dplyr::filter(time >= comparison_start &
-                                                   time <= comparison_end)
-                    }
-
-                    x
+                dplyr::group_by(samples, label) |>
+                dplyr::group_map(function(data, name) {
+                    dplyr::bind_rows(data$time_series) |>
+                        dplyr::group_by(Index) |>
+                        dplyr::summarize(dplyr::across(dplyr::everything(),
+                                                       stats::median, na.rm = TRUE)) |>
+                        dplyr::rename(time = Index) |>
+                        data.frame()
                 })
+
+            train_samples_timeline <- sits_timeline(samples)
 
             predict_fun <- function(values) {
                 # Used to check values (below)
                 input_pixels <- nrow(values)
-                input_attributes <-
-                    ncol(samples$time_series[[1]]) - 1
-                input_times <- ncol(values) / input_attributes
 
                 # Do classification
                 classes <-
                     do.call(rbind, lapply(1:input_pixels, function(row_index) {
-                        row_values <- values[row_index, ]
+                        row_values <- data.frame(t(as.numeric(values[row_index,])))
+                        row_values <-
+                            stats::setNames(row_values, train_samples_bands_preds)
 
-                        res <-
-                            t(sapply(1:input_times, function(attr_index) {
-                                start_col <- (attr_index - 1) * input_attributes + 1
-                                end_col <-
-                                    attr_index * input_attributes
-                                row_values[start_col:end_col]
-                            }))
+                        # Transform from a unique long time-series to a
+                        # data frame with multiple time-series.
+                        row_values <-
+                            as.matrix(
+                                tidyr::pivot_longer(
+                                    row_values,
+                                    cols = dplyr::everything(),
+                                    cols_vary = "fastest",
+                                    names_to = c(".value"),
+                                    names_pattern = train_samples_bands
+                                )
+                            )
 
-                        res_df <-
-                            data.frame(time = samples$time_series[[1]]$Index, res)
-                        colnames(res_df) <-
-                            colnames(train_samples_patterns$time_series[[1]])
+                        row_values <- data.frame(time = train_samples_timeline,
+                                                 row_values)
 
                         distances <-
-                            as.numeric(unlist(
-                                lapply(train_samples_patterns$time_series, function(ts_pattern) {
-                                    # twdtw::twdtw(res_df, as.data.frame(ts_pattern), ...)
-                                    matches <- twdtw::twdtw(
-                                        x = res_df,
-                                        y = as.data.frame(ts_pattern),
-                                        origin = overlap_start,
-                                        cycle_length = overlap_step_params$value,
-                                        time_scale = overlap_step_params$unit,
-                                        output = "matches",
-                                        ...
-                                    )
+                            as.numeric(unlist(lapply(train_samples_patterns, function(ts_pattern) {
+                                twdtw::twdtw(x = row_values,
+                                             y = ts_pattern,
+                                             ...)
+                            })))
 
-                                    matches_overlap <-
-                                        lapply(1:nrow(matches), function(match_index) {
-                                            query <- ts_pattern$time[matches[match_index, 1:2]]
-                                            query_start <- query[1]
-                                            query_end <- query[2]
-
-                                            result <-
-                                                calculate_overlap(
-                                                    overlap_start,
-                                                    overlap_end,
-                                                    overlap_step,
-                                                    query_start,
-                                                    query_end
-                                                )
-
-                                            result$overlap_percentage
-                                        })
-
-                                    matches_overlap <-
-                                        unlist(unlist(matches_overlap) / 100 > overlap_percentage)
-
-                                    if (all(!matches_overlap)) {
-                                        return(Inf)
-                                    }
-
-                                    matches <-
-                                        matches[, 3][matches_overlap]
-
-                                    min(matches)
-                                })
-                            ))
-
-                        # distances / sum(distances)
-                        # (1 / distances) / sum(1 / distances)
-                        # (1 / distances) / sum(1 / distances) * sum(distances)
-                        as.numeric(distances == min(distances))
+                        (1 / distances) / sum(1 / distances)
                     }))
 
                 return(classes)
@@ -232,6 +74,86 @@ sits_twdtw <-
             # Set model class
             predict_fun <- .set_class(predict_fun,
                                       "twdtw_model",
+                                      "sits_model",
+                                      class(predict_fun))
+            return(predict_fun)
+        }
+        # If samples is informed, train a model and return a predict function
+        # Otherwise give back a train function to train model further
+        result <- .factory_function(samples, train_fun)
+        return(result)
+    }
+
+
+#' @title Train dtw
+#' @name sits_dtw
+#' @export
+#'
+sits_dtw <-
+    function(samples = NULL) {
+        train_fun <- function(samples) {
+            # Get labels (used later to ensure column order in result matrix)
+            labels <- .samples_labels(samples)
+            # Get predictors features
+            train_samples <- .predictors(samples)
+            # Get bands available in the samples
+            train_samples_bands <- paste0("(",
+                                          paste(sits_bands(samples), collapse = "|"),
+                                          ")")
+            # Get predictors names
+            train_samples_bands_preds <- names(train_samples)
+            train_samples_bands_preds <-
+                train_samples_bands_preds[3:length(train_samples_bands_preds)]
+            # Get samples patterns (temporal median)
+            train_samples_patterns <-
+                dplyr::group_by(samples, label) |>
+                dplyr::group_map(function(data, name) {
+                    dplyr::bind_rows(data$time_series) |>
+                        dplyr::group_by(Index) |>
+                        dplyr::summarize(dplyr::across(dplyr::everything(),
+                                                       stats::median, na.rm = TRUE)) |>
+                        dplyr::select(-Index) |>
+                        as.matrix()
+                })
+
+            predict_fun <- function(values) {
+                # Used to check values (below)
+                input_pixels <- nrow(values)
+
+                # Do classification
+                classes <-
+                    do.call(rbind, lapply(1:input_pixels, function(row_index) {
+                        row_values <- data.frame(t(as.numeric(values[row_index,])))
+                        row_values <-
+                            stats::setNames(row_values, train_samples_bands_preds)
+
+                        # Transform from a unique long time-series to a
+                        # data frame with multiple time-series.
+                        row_values <-
+                            as.matrix(
+                                tidyr::pivot_longer(
+                                    row_values,
+                                    cols = dplyr::everything(),
+                                    cols_vary = "fastest",
+                                    names_to = c(".value"),
+                                    names_pattern = train_samples_bands
+                                )
+                            )
+
+                        distances <-
+                            as.numeric(unlist(lapply(train_samples_patterns, function(ts_pattern) {
+                                distance_dtw(ts1 = row_values,
+                                             ts2 = ts_pattern)
+                            })))
+
+                        (1 / distances) / sum(1 / distances)
+                    }))
+
+                return(classes)
+            }
+            # Set model class
+            predict_fun <- .set_class(predict_fun,
+                                      "dtw_model",
                                       "sits_model",
                                       class(predict_fun))
             return(predict_fun)
@@ -287,64 +209,74 @@ sits_twdtw <-
 #' }
 #' @export
 #'
-sits_rfor <- function(samples = NULL, num_trees = 100, mtry = NULL, ...) {
-    # Function that trains a random forest model
-    train_fun <- function(samples) {
-        # Verifies if 'randomForest' package is installed
-        .check_require_packages("randomForest")
-        # Checks 'num_trees'
-        .check_int_parameter(num_trees)
-        # Get labels (used later to ensure column order in result matrix)
-        labels <- .samples_labels(samples)
-        # Get predictors features
-        train_samples <- .predictors(samples)
-        # Post condition: is predictor data valid?
-        .check_predictors(pred = train_samples, samples = samples)
-
-        # Apply the 'mtry' default value of 'randomForest' package
-        if (purrr::is_null(mtry)) {
-            n_features <- ncol(train_samples) - 2
-            mtry <- floor(sqrt(n_features))
-            # Checks 'mtry'
-            .check_int_parameter(mtry, min = 1, max = n_features)
-        }
-        # Train a random forest model
-        model <- randomForest::randomForest(
-            x = .pred_features(train_samples),
-            y = as.factor(.pred_references(train_samples)),
-            samples = NULL, ntree = num_trees, mtry = mtry,
-            nodesize = 1, localImp = TRUE, norm.votes = FALSE, ...,
-            na.action = stats::na.fail
-        )
-        # Function that predicts results
-        predict_fun <- function(values) {
-            # Verifies if randomForest package is installed
+sits_rfor <-
+    function(samples = NULL,
+             num_trees = 100,
+             mtry = NULL,
+             ...) {
+        # Function that trains a random forest model
+        train_fun <- function(samples) {
+            # Verifies if 'randomForest' package is installed
             .check_require_packages("randomForest")
-            # Used to check values (below)
-            input_pixels <- nrow(values)
-            # Do classification
-            values <- stats::predict(
-                object = model, newdata = values, type = "prob"
-            )
-            # Are the results consistent with the data input?
-            .check_processed_values(values, input_pixels)
-            # Reorder matrix columns if needed
-            if (any(labels != colnames(values))) {
-                values <- values[, labels]
+            # Checks 'num_trees'
+            .check_int_parameter(num_trees)
+            # Get labels (used later to ensure column order in result matrix)
+            labels <- .samples_labels(samples)
+            # Get predictors features
+            train_samples <- .predictors(samples)
+            # Post condition: is predictor data valid?
+            .check_predictors(pred = train_samples, samples = samples)
+
+            # Apply the 'mtry' default value of 'randomForest' package
+            if (purrr::is_null(mtry)) {
+                n_features <- ncol(train_samples) - 2
+                mtry <- floor(sqrt(n_features))
+                # Checks 'mtry'
+                .check_int_parameter(mtry, min = 1, max = n_features)
             }
-            return(values)
+            # Train a random forest model
+            model <- randomForest::randomForest(
+                x = .pred_features(train_samples),
+                y = as.factor(.pred_references(train_samples)),
+                samples = NULL,
+                ntree = num_trees,
+                mtry = mtry,
+                nodesize = 1,
+                localImp = TRUE,
+                norm.votes = FALSE,
+                ...,
+                na.action = stats::na.fail
+            )
+            # Function that predicts results
+            predict_fun <- function(values) {
+                # Verifies if randomForest package is installed
+                .check_require_packages("randomForest")
+                # Used to check values (below)
+                input_pixels <- nrow(values)
+                # Do classification
+                values <- stats::predict(object = model,
+                                         newdata = values,
+                                         type = "prob")
+                # Are the results consistent with the data input?
+                .check_processed_values(values, input_pixels)
+                # Reorder matrix columns if needed
+                if (any(labels != colnames(values))) {
+                    values <- values[, labels]
+                }
+                return(values)
+            }
+            # Set model class
+            predict_fun <- .set_class(predict_fun,
+                                      "rfor_model",
+                                      "sits_model",
+                                      class(predict_fun))
+            return(predict_fun)
         }
-        # Set model class
-        predict_fun <- .set_class(
-            predict_fun, "rfor_model", "sits_model", class(predict_fun)
-        )
-        return(predict_fun)
+        # If samples is informed, train a model and return a predict function
+        # Otherwise give back a train function to train model further
+        result <- .factory_function(samples, train_fun)
+        return(result)
     }
-    # If samples is informed, train a model and return a predict function
-    # Otherwise give back a train function to train model further
-    result <- .factory_function(samples, train_fun)
-    return(result)
-}
 #' @title Train support vector machine models
 #' @name sits_svm
 #' @author Alexandre Ywata de Carvalho, \email{alexandre.ywata@@ipea.gov.br}
@@ -400,68 +332,92 @@ sits_rfor <- function(samples = NULL, num_trees = 100, mtry = NULL, ...) {
 #' }
 #' @export
 #'
-sits_svm <- function(samples = NULL, formula = sits_formula_linear(),
-                     scale = FALSE, cachesize = 1000, kernel = "radial",
-                     degree = 3, coef0 = 0, cost = 10, tolerance = 0.001,
-                     epsilon = 0.1, cross = 10, ...) {
-    # Function that trains a support vector machine model
-    train_fun <- function(samples) {
-        # Verifies if e1071 package is installed
-        .check_require_packages("e1071")
-        # Get labels (used later to ensure column order in result matrix)
-        labels <- .samples_labels(samples)
-        # Get normalized training samples
-        ml_stats <- .samples_stats(samples)
-        # Get predictors features
-        train_samples <- .predictors(samples)
-        # Normalize predictors
-        train_samples <- .pred_normalize(pred = train_samples, stats = ml_stats)
-        # Post condition: is predictor data valid?
-        .check_predictors(pred = train_samples, samples = samples)
-        # Update formula parameter
-        if (inherits(formula, "function")) {
-            formula <- formula(train_samples)
-        }
-        # Train an svm model
-        model <- e1071::svm(
-            formula = formula, data = train_samples, scale = scale,
-            kernel = kernel, degree = degree, cost = cost, coef0 = coef0,
-            cachesize = cachesize, tolerance = tolerance, epsilon = epsilon,
-            cross = cross, probability = TRUE, ..., na.action = stats::na.fail
-        )
-        # Function that predicts labels of input values
-        predict_fun <- function(values) {
+sits_svm <-
+    function(samples = NULL,
+             formula = sits_formula_linear(),
+             scale = FALSE,
+             cachesize = 1000,
+             kernel = "radial",
+             degree = 3,
+             coef0 = 0,
+             cost = 10,
+             tolerance = 0.001,
+             epsilon = 0.1,
+             cross = 10,
+             ...) {
+        # Function that trains a support vector machine model
+        train_fun <- function(samples) {
             # Verifies if e1071 package is installed
             .check_require_packages("e1071")
-            # Used to check values (below)
-            input_pixels <- nrow(values)
-            # Performs data normalization
-            values <- .pred_normalize(pred = values, stats = ml_stats)
-            # Do classification
-            values <- stats::predict(
-                object = model, newdata = values, probability = TRUE
-            )
-            # Get the predicted probabilities
-            values <- attr(values, "probabilities")
-            # Are the results consistent with the data input?
-            .check_processed_values(values, input_pixels)
-            # Reorder matrix columns if needed
-            if (any(labels != colnames(values))) {
-                values <- values[, labels]
+            # Get labels (used later to ensure column order in result matrix)
+            labels <- .samples_labels(samples)
+            # Get normalized training samples
+            ml_stats <- .samples_stats(samples)
+            # Get predictors features
+            train_samples <- .predictors(samples)
+            # Normalize predictors
+            train_samples <-
+                .pred_normalize(pred = train_samples, stats = ml_stats)
+            # Post condition: is predictor data valid?
+            .check_predictors(pred = train_samples, samples = samples)
+            # Update formula parameter
+            if (inherits(formula, "function")) {
+                formula <- formula(train_samples)
             }
-            return(values)
+            # Train an svm model
+            model <- e1071::svm(
+                formula = formula,
+                data = train_samples,
+                scale = scale,
+                kernel = kernel,
+                degree = degree,
+                cost = cost,
+                coef0 = coef0,
+                cachesize = cachesize,
+                tolerance = tolerance,
+                epsilon = epsilon,
+                cross = cross,
+                probability = TRUE,
+                ...,
+                na.action = stats::na.fail
+            )
+            # Function that predicts labels of input values
+            predict_fun <- function(values) {
+                # Verifies if e1071 package is installed
+                .check_require_packages("e1071")
+                # Used to check values (below)
+                input_pixels <- nrow(values)
+                # Performs data normalization
+                values <-
+                    .pred_normalize(pred = values, stats = ml_stats)
+                # Do classification
+                values <- stats::predict(
+                    object = model,
+                    newdata = values,
+                    probability = TRUE
+                )
+                # Get the predicted probabilities
+                values <- attr(values, "probabilities")
+                # Are the results consistent with the data input?
+                .check_processed_values(values, input_pixels)
+                # Reorder matrix columns if needed
+                if (any(labels != colnames(values))) {
+                    values <- values[, labels]
+                }
+                return(values)
+            }
+            # Set model class
+            predict_fun <- .set_class(predict_fun,
+                                      "svm_model",
+                                      "sits_model",
+                                      class(predict_fun))
+            return(predict_fun)
         }
-        # Set model class
-        predict_fun <- .set_class(
-            predict_fun, "svm_model", "sits_model", class(predict_fun)
-        )
-        return(predict_fun)
+        # If samples is informed, train a model and return a predict function
+        # Otherwise give back a train function to train model further
+        result <- .factory_function(samples, train_fun)
+        return(result)
     }
-    # If samples is informed, train a model and return a predict function
-    # Otherwise give back a train function to train model further
-    result <- .factory_function(samples, train_fun)
-    return(result)
-}
 #' @title Train extreme gradient boosting models
 #' @name sits_xgboost
 #' @author Rolf Simoes, \email{rolf.simoes@@inpe.br}
@@ -526,12 +482,18 @@ sits_svm <- function(samples = NULL, formula = sits_formula_linear(),
 #' }
 #' @export
 #'
-sits_xgboost <- function(samples = NULL, learning_rate = 0.15,
-                         min_split_loss = 1, max_depth = 5,
-                         min_child_weight = 1, max_delta_step = 1,
-                         subsample = 0.8, nfold = 5, nrounds = 100,
+sits_xgboost <- function(samples = NULL,
+                         learning_rate = 0.15,
+                         min_split_loss = 1,
+                         max_depth = 5,
+                         min_child_weight = 1,
+                         max_delta_step = 1,
+                         subsample = 0.8,
+                         nfold = 5,
+                         nrounds = 100,
                          nthread = 6,
-                         early_stopping_rounds = 20, verbose = FALSE) {
+                         early_stopping_rounds = 20,
+                         verbose = FALSE) {
     # Function that trains a xgb model
     train_fun <- function(samples) {
         # verifies if xgboost package is installed
@@ -550,11 +512,15 @@ sits_xgboost <- function(samples = NULL, learning_rate = 0.15,
             unname(code_labels[.pred_references(train_samples)]) - 1
         # Define the parameters of the model
         params <- list(
-            booster = "gbtree", objective = "multi:softprob",
-            eval_metric = "mlogloss", eta = learning_rate,
-            gamma = min_split_loss, max_depth = max_depth,
+            booster = "gbtree",
+            objective = "multi:softprob",
+            eval_metric = "mlogloss",
+            eta = learning_rate,
+            gamma = min_split_loss,
+            max_depth = max_depth,
             min_child_weight = min_child_weight,
-            max_delta_step = max_delta_step, subsample = subsample,
+            max_delta_step = max_delta_step,
+            subsample = subsample,
             nthread = nthread
         )
         if (verbose)
@@ -562,13 +528,15 @@ sits_xgboost <- function(samples = NULL, learning_rate = 0.15,
         else
             verbose = 0
         # transform predictors in a xgb.DMatrix
-        xgb_matrix <- xgboost::xgb.DMatrix(
-            data = as.matrix(.pred_features(train_samples)),
-            label = references)
+        xgb_matrix <- xgboost::xgb.DMatrix(data = as.matrix(.pred_features(train_samples)),
+                                           label = references)
         # train the model
-        model <- xgboost::xgb.train(xgb_matrix,
-                                    num_class = length(labels), params = params,
-                                    nrounds = nrounds, verbose = verbose
+        model <- xgboost::xgb.train(
+            xgb_matrix,
+            num_class = length(labels),
+            params = params,
+            nrounds = nrounds,
+            verbose = verbose
         )
         # Get best ntreelimit
         ntreelimit <- model$best_ntreelimit
@@ -580,7 +548,9 @@ sits_xgboost <- function(samples = NULL, learning_rate = 0.15,
             input_pixels <- nrow(values)
             # Do classification
             values <- stats::predict(
-                object = model, as.matrix(values), ntreelimit = ntreelimit,
+                object = model,
+                as.matrix(values),
+                ntreelimit = ntreelimit,
                 reshape = TRUE
             )
             # Are the results consistent with the data input?
@@ -590,9 +560,10 @@ sits_xgboost <- function(samples = NULL, learning_rate = 0.15,
             return(values)
         }
         # Set model class
-        predict_fun <- .set_class(
-            predict_fun, "xgb_model", "sits_model", class(predict_fun)
-        )
+        predict_fun <- .set_class(predict_fun,
+                                  "xgb_model",
+                                  "sits_model",
+                                  class(predict_fun))
         return(predict_fun)
     }
     # If samples is informed, train a model and return a predict function
@@ -647,10 +618,8 @@ sits_formula_logref <- function(predictors_index = -2:0) {
     # 'factor(reference~log(f1)+log(f2)+...+log(fn)' where f1, f2, ..., fn are
     # the predictor fields given by the predictor index.
     result_fun <- function(tb) {
-        .check_that(
-            x = nrow(tb) > 0,
-            msg = "invalid data"
-        )
+        .check_that(x = nrow(tb) > 0,
+                    msg = "invalid data")
         n_rows_tb <- nrow(tb)
 
         # if no predictors_index are given, assume all tb's fields are used
@@ -662,12 +631,11 @@ sits_formula_logref <- function(predictors_index = -2:0) {
         categories <- names(tb)[c(predictors_index)]
 
         # compute formula result
-        result_for <- stats::as.formula(paste0(
-            "factor(label)~",
-            paste0(paste0("log(`", categories, "`)"),
-                   collapse = "+"
-            )
-        ))
+        result_for <- stats::as.formula(paste0("factor(label)~",
+                                               paste0(
+                                                   paste0("log(`", categories, "`)"),
+                                                   collapse = "+"
+                                               )))
         return(result_for)
     }
     return(result_fun)
@@ -717,10 +685,8 @@ sits_formula_linear <- function(predictors_index = -2:0) {
     # 'factor(reference~log(f1)+log(f2)+...+log(fn)' where f1, f2, ..., fn are
     #  the predictor fields.
     result_fun <- function(tb) {
-        .check_that(
-            x = nrow(tb) > 0,
-            msg = "invalid data"
-        )
+        .check_that(x = nrow(tb) > 0,
+                    msg = "invalid data")
         n_rows_tb <- nrow(tb)
         # if no predictors_index are given, assume that all fields are used
         if (purrr::is_null(predictors_index)) {
@@ -731,12 +697,11 @@ sits_formula_linear <- function(predictors_index = -2:0) {
         categories <- names(tb)[c(predictors_index)]
 
         # compute formula result
-        result_for <- stats::as.formula(paste0(
-            "factor(label)~",
-            paste0(paste0(categories,
-                          collapse = "+"
-            ))
-        ))
+        result_for <- stats::as.formula(paste0("factor(label)~",
+                                               paste0(
+                                                   paste0(categories,
+                                                          collapse = "+")
+                                               )))
         return(result_for)
     }
     return(result_fun)
