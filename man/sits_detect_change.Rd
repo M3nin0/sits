@@ -2,9 +2,29 @@
 % Please edit documentation in R/sits_detect_change.R
 \name{sits_detect_change}
 \alias{sits_detect_change}
+\alias{sits_detect_change.sits}
+\alias{sits_detect_change.default}
 \title{Detect changes in time series}
 \usage{
-sits_detect_change(data, cd_method)
+sits_detect_change(
+  data,
+  cd_method,
+  ...,
+  filter_fn = NULL,
+  multicores = 2L,
+  progress = TRUE
+)
+
+\method{sits_detect_change}{sits}(
+  data,
+  cd_method,
+  ...,
+  filter_fn = NULL,
+  impute_fn = impute_linear(),
+  progress = TRUE
+)
+
+\method{sits_detect_change}{default}(data, cd_method, ...)
 }
 \arguments{
 \item{data}{Set of time series}
