@@ -711,6 +711,1758 @@ sources:
         service             : "STAC"
         url                 : "https://explorer.digitalearth.africa/stac/"
         collections         :
+            FC_LS           :
+                bands:
+                  BS:
+                    band_name: "bs"
+                    resolution: 30
+                    data_type: "INT1U"
+                    missing_value: 255
+                    minimum_value: 1
+                    maximum_value: 100
+                    scale_factor: 1
+                    offset_value: 0
+                    resampling: "bilinear"
+                  PV:
+                    band_name: "pv"
+                    resolution: 30
+                    data_type: "INT1U"
+                    missing_value: 255
+                    minimum_value: 1
+                    maximum_value: 100
+                    scale_factor: 1
+                    offset_value: 0
+                    resampling: "bilinear"
+                  UE:
+                    band_name: "ue"
+                    resolution: 30
+                    data_type: "INT1U"
+                    missing_value: 255
+                    minimum_value: 1
+                    maximum_value: 127
+                    scale_factor: 1
+                    offset_value: 0
+                    resampling: "bilinear"
+                  NPV:
+                    band_name: "npv"
+                    resolution: 30
+                    data_type: "INT1U"
+                    missing_value: 255
+                    minimum_value: 1
+                    maximum_value: 100
+                    scale_factor: 1
+                    offset_value: 0
+                    resampling: "bilinear"
+                satellite: "landsat/5-7-8"
+                sensor: "TM/ETM+/OLI"
+                collection_name: "fc_ls"
+                access_vars:
+                  AWS_DEFAULT_REGION: "af-south-1"
+                  AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                  AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+            FC_LS_SUMMARY_ANNUAL           :
+                bands:
+                    BS-PC-10:
+                        band_name: "bs_pc_10"
+                        resolution: 30
+                        data_type: "INT1U"
+                        missing_value: 255
+                        minimum_value: 1
+                        maximum_value: 100
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    BS-PC-50:
+                        band_name: "bs_pc_50"
+                        resolution: 30
+                        data_type: "INT1U"
+                        missing_value: 255
+                        minimum_value: 1
+                        maximum_value: 100
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    BS-PC-90:
+                        band_name: "bs_pc_90"
+                        resolution: 30
+                        data_type: "INT1U"
+                        missing_value: 255
+                        minimum_value: 1
+                        maximum_value: 100
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    PV-PC-10:
+                        band_name: "pv_pc_10"
+                        resolution: 30
+                        data_type: "INT1U"
+                        missing_value: 255
+                        minimum_value: 1
+                        maximum_value: 100
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    PV-PC-50:
+                        band_name: "pv_pc_50"
+                        resolution: 30
+                        data_type: "INT1U"
+                        missing_value: 255
+                        minimum_value: 1
+                        maximum_value: 100
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    PV-PC-90:
+                        band_name: "pv_pc_90"
+                        resolution: 30
+                        data_type: "INT1U"
+                        missing_value: 255
+                        minimum_value: 1
+                        maximum_value: 100
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    NPV-PC-10:
+                        band_name: "npv_pc_10"
+                        resolution: 30
+                        data_type: "INT1U"
+                        missing_value: 255
+                        minimum_value: 1
+                        maximum_value: 100
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    NPV-PC-50:
+                        band_name: "npv_pc_50"
+                        resolution: 30
+                        data_type: "INT1U"
+                        missing_value: 255
+                        minimum_value: 1
+                        maximum_value: 100
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    NPV-PC-90:
+                        band_name: "npv_pc_90"
+                        resolution: 30
+                        data_type: "INT1U"
+                        missing_value: 255
+                        minimum_value: 1
+                        maximum_value: 100
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    CLOUD:
+                        band_name: "qa"
+                        resolution: 30
+                        data_type: "INT1U"
+                        bit_mask: true
+                        values:
+                            0: "insufficient observations wet"
+                            1: "insufficient observations dry"
+                            2: "sufficient observations"
+                        interp_values: [0, 1]
+                satellite: "landsat/5-7-8"
+                sensor: "TM/ETM+/OLI"
+                collection_name: "fc_ls_summary_annual"
+                access_vars:
+                  AWS_DEFAULT_REGION: "af-south-1"
+                  AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                  AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+
+            GM_LS5_LS7_ANNUAL:
+                bands:
+                    EMAD:
+                        band_name: "EMAD"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 31623
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    SMAD:
+                        band_name: "SMAD"
+                        resolution: 30
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    BCMAD:
+                        band_name: "BCMAD"
+                        resolution: 30
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B01:
+                        band_name: "SR_B1"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B02:
+                        band_name: "SR_B2"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "SR_B3"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "SR_B4"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "SR_B5"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "SR_B7"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "LANDSAT-5/7"
+                sensor: "OLI/ETM+"
+                collection_name: "gm_ls5_ls7_annual"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+            GM_LS5_LS7_ANNUAL_LOWRES:
+                bands:
+                    EMAD:
+                        band_name: "EMAD"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 31623
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    SMAD:
+                        band_name: "SMAD"
+                        resolution: 120
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    BCMAD:
+                        band_name: "BCMAD"
+                        resolution: 120
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B01:
+                        band_name: "SR_B1"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B02:
+                        band_name: "SR_B2"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "SR_B3"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "SR_B4"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "SR_B5"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "SR_B7"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "LANDSAT-5/7"
+                sensor: "OLI/ETM+"
+                collection_name: "gm_ls5_ls7_annual_lowres"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+
+            GM_LS8_ANNUAL   :
+                bands:
+                    B02:
+                        band_name: "SR_B2"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "SR_B3"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "SR_B4"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "SR_B5"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "SR_B6"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "SR_B7"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "LANDSAT-8"
+                sensor: "OLI"
+                collection_name: "gm_ls8_annual"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+            GM_LS8_ANNUAL_LOWRES   :
+                bands:
+                    B02:
+                        band_name: "SR_B2"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "SR_B3"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "SR_B4"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "SR_B5"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "SR_B6"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "SR_B7"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "LANDSAT-8"
+                sensor: "OLI"
+                collection_name: "gm_ls8_annual_lowres"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+
+            GM_LS8_LS9_ANNUAL   :
+                bands:
+                    B02:
+                        band_name: "SR_B2"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "SR_B3"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "SR_B4"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "SR_B5"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "SR_B6"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "SR_B7"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "LANDSAT-8/9"
+                sensor: "OLI"
+                collection_name: "gm_ls8_ls9_annual"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+            GM_LS8_LS9_ANNUAL_LOWRES   :
+                bands:
+                    B02:
+                        band_name: "SR_B2"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "SR_B3"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "SR_B4"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "SR_B5"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "SR_B6"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "SR_B7"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "LANDSAT-8/9"
+                sensor: "OLI"
+                collection_name: "gm_ls8_ls9_annual"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+
+            GM_S2_ANNUAL              :
+                bands:
+                    B02:
+                        band_name: "B02"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "B03"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "B04"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "B05"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "B06"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "B07"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B08:
+                        band_name: "B08"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B11:
+                        band_name: "B11"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B12:
+                        band_name: "B12"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B8A:
+                        band_name: "B8A"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMAD:
+                        band_name: "EMAD"
+                        resolution: 10
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 1
+                        maximum_value: 31623
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    SMAD:
+                        band_name: "SMAD"
+                        resolution: 10
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    BCMAD:
+                        band_name: "BCMAD"
+                        resolution: 10
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "SENTINEL-2"
+                sensor: "MSI"
+                collection_name: "gm_s2_annual"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "MGRS"
+            GM_S2_ANNUAL_LOWRES       :
+                bands:
+                    B02:
+                        band_name: "B02"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "B03"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "B04"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "B05"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "B06"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "B07"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B08:
+                        band_name: "B08"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B11:
+                        band_name: "B11"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B12:
+                        band_name: "B12"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B8A:
+                        band_name: "B8A"
+                        resolution: 305
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMAD:
+                        band_name: "EMAD"
+                        resolution: 305
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 1
+                        maximum_value: 31623
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    SMAD:
+                        band_name: "SMAD"
+                        resolution: 305
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    BCMAD:
+                        band_name: "BCMAD"
+                        resolution: 305
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "SENTINEL-2"
+                sensor: "MSI"
+                collection_name: "gm_s2_annual_lowres"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "MGRS"
+            GM_S2_ROLLING             :
+                bands:
+                    B02:
+                        band_name: "B02"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "B03"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "B04"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "B05"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "B06"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "B07"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B08:
+                        band_name: "B08"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B11:
+                        band_name: "B11"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B12:
+                        band_name: "B12"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B8A:
+                        band_name: "B8A"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMAD:
+                        band_name: "EMAD"
+                        resolution: 10
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 1
+                        maximum_value: 31623
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    SMAD:
+                        band_name: "SMAD"
+                        resolution: 10
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    BCMAD:
+                        band_name: "BCMAD"
+                        resolution: 10
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "SENTINEL-2"
+                sensor: "MSI-3MONTHLY-ROLLING-GEOMEDIAN-MEDIAN"
+                collection_name: "gm_s2_rolling"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "MGRS"
+            GM_S2_SEMIANNUAL          :
+                bands:
+                    B02:
+                        band_name: "B02"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "B03"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "B04"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "B05"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "B06"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "B07"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B08:
+                        band_name: "B08"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B11:
+                        band_name: "B11"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B12:
+                        band_name: "B12"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B8A:
+                        band_name: "B8A"
+                        resolution: 10
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMAD:
+                        band_name: "EMAD"
+                        resolution: 10
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 1
+                        maximum_value: 31623
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    SMAD:
+                        band_name: "SMAD"
+                        resolution: 10
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    BCMAD:
+                        band_name: "BCMAD"
+                        resolution: 10
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "SENTINEL-2"
+                sensor: "MSI-SEMIANNUAL-GEOMEDIAN-MEDIAN"
+                collection_name: "gm_s2_semiannual"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "MGRS"
+            GM_S2_SEMIANNUAL_LOWRES   :
+                bands:
+                    B02:
+                        band_name: "B02"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "B03"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "B04"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "B05"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "B06"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "B07"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B08:
+                        band_name: "B08"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B11:
+                        band_name: "B11"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B12:
+                        band_name: "B12"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B8A:
+                        band_name: "B8A"
+                        resolution: 120
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMAD:
+                        band_name: "EMAD"
+                        resolution: 120
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 1
+                        maximum_value: 31623
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    SMAD:
+                        band_name: "SMAD"
+                        resolution: 120
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    BCMAD:
+                        band_name: "BCMAD"
+                        resolution: 120
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "SENTINEL-2"
+                sensor: "MSI-SEMIANNUAL-GEOMEDIAN-MEDIAN-LOWRES"
+                collection_name: "gm_s2_semiannual_lowres"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "MGRS"
+
+            LS5_SR          :
+                bands:
+                    B01:
+                        band_name: "SR_B1"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B02:
+                        band_name: "SR_B2"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "SR_B3"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "SR_B4"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "SR_B5"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "SR_B7"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    CLOUD:
+                        band_name: "QA_PIXEL"
+                        resolution: 30
+                        data_type: "INT2U"
+                        bit_mask: true
+                        values:
+                            0  : "missing_data"
+                            1  : "Dilated Cloud"
+                            2  : "Unused"
+                            3  : "Cloud"
+                            4  : "Cloud Shadow"
+                            5  : "Snow"
+                            6  : "Clear"
+                            7  : "Water"
+                            8  : "Cloud Confidence"
+                            9  : "Cloud Confidence"
+                            12 : "Snow/Ice Confidence"
+                            13 : "Snow/Ice Confidence"
+                            14 : "Unused"
+                            15 : "Unused"
+                        interp_values: [0, 1, 3, 4, 5]
+
+                satellite: "LANDSAT-5"
+                sensor: "TM-MSS"
+                collection_name: "ls5_sr"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+            LS7_SR          :
+                bands:
+                    B01:
+                        band_name: "SR_B1"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B02:
+                        band_name: "SR_B2"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "SR_B3"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "SR_B4"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "SR_B5"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "SR_B7"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    CLOUD:
+                        band_name: "QA_PIXEL"
+                        resolution: 30
+                        data_type: "INT2U"
+                        bit_mask: true
+                        values:
+                            0: "missing_data"
+                            1: "Dilated Cloud"
+                            2: "Unused"
+                            3: "Cloud"
+                            4: "Cloud Shadow"
+                            5: "Snow"
+                            6: "Clear"
+                            7: "Water"
+                            8: "Cloud Confidence"
+                            9: "Cloud Confidence"
+                            12: "Snow/Ice Confidence"
+                            13: "Snow/Ice Confidence"
+                            14: "Unused"
+                            15: "Unused"
+                        interp_values: [0, 1, 3, 4, 5]
+                satellite: "LANDSAT-7"
+                sensor: "ETM"
+                collection_name: "ls7_sr"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+            LS8_SR          : &deafrica_l8
+                bands       :
+                    B01     : &deafrica_oli_30m
+                        missing_value : 0
+                        minimum_value : 7273
+                        maximum_value : 43636
+                        scale_factor  : 0.0000275
+                        offset_value  : -0.2
+                        resampling    : "bilinear"
+                        resolution    : 30
+                        band_name     : "SR_B1"
+                        data_type     : "INT2U"
+                    B02     :
+                        <<: *deafrica_oli_30m
+                        band_name     : "SR_B2"
+                    B03     :
+                        <<: *deafrica_oli_30m
+                        band_name     : "SR_B3"
+                    B04     :
+                        <<: *deafrica_oli_30m
+                        band_name     : "SR_B4"
+                    B05     :
+                        <<: *deafrica_oli_30m
+                        band_name     : "SR_B5"
+                    B06     :
+                        <<: *deafrica_oli_30m
+                        band_name     : "SR_B6"
+                    B07     :
+                        <<: *deafrica_oli_30m
+                        band_name     : "SR_B7"
+                    CLOUD   :
+                        bit_mask      : true
+                        band_name     : "QA_PIXEL"
+                        values        :
+                            0         : "missing_data"
+                            1         : "Dilated Cloud"
+                            2         : "High confidence cirrus"
+                            4         : "High confidence cloud shadow"
+                            5         : "High confidence snow cover"
+                            6         : "Clear"
+                            7         : "Water"
+                            9         : "High confidence of cloud"
+                            11        : "High confidence of cloud shadow"
+                            13        : "High confidence of snow"
+                            15        : "High confidence of cirrus"
+                        interp_values : [0, 1, 2, 3, 4, 5]
+                        resampling    : "near"
+                        resolution    : 30
+                        data_type     : "INT2U"
+                satellite   : "LANDSAT-8"
+                sensor      : "OLI"
+                collection_name: "ls8_sr"
+                access_vars :
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT   : "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search : "feature"
+                ext_tolerance: 0
+                grid_system  : "WRS-2"
+            LS9_SR          :
+                bands:
+                    B01:
+                        band_name: "SR_B1"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B02:
+                        band_name: "SR_B2"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B03:
+                        band_name: "SR_B3"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B04:
+                        band_name: "SR_B4"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B05:
+                        band_name: "SR_B5"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B06:
+                        band_name: "SR_B6"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    B07:
+                        band_name: "SR_B7"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65455
+                        scale_factor: 2.75e-05
+                        offset_value: -0.2
+                        resampling: "bilinear"
+                    CLOUD: # TODO: Validate
+                        band_name: "QA_PIXEL"
+                        resolution: 30
+                        data_type: "INT2U"
+                        bit_mask: true
+                        values:
+                            0         : "missing_data"
+                            1         : "Dilated Cloud"
+                            2         : "High confidence cirrus"
+                            4         : "High confidence cloud shadow"
+                            5         : "High confidence snow cover"
+                            6         : "Clear"
+                            7         : "Water"
+                            9         : "High confidence of cloud"
+                            11        : "High confidence of cloud shadow"
+                            13        : "High confidence of snow"
+                            15        : "High confidence of cirrus"
+                        interp_values : [0, 1, 2, 3, 4, 5]
+                satellite: "LANDSAT-9"
+                sensor: "OLI"
+                collection_name: "ls9_sr"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+
             S2_L2A          :
                 bands       :
                     B01     : &deafrica_msi_60m
@@ -798,67 +2550,807 @@ sources:
                 metadata_search : "tile"
                 ext_tolerance: 0
                 grid_system  : "MGRS"
-            LS8_SR          : &deafrica_l8
-                bands       :
-                    B01     : &deafrica_oli_30m
-                        missing_value : 0
-                        minimum_value : 7273
-                        maximum_value : 43636
-                        scale_factor  : 0.0000275
-                        offset_value  : -0.2
-                        resampling    : "bilinear"
-                        resolution    : 30
-                        band_name     : "SR_B1"
-                        data_type     : "INT2U"
-                    B02     :
-                        <<: *deafrica_oli_30m
-                        band_name     : "SR_B2"
-                    B03     :
-                        <<: *deafrica_oli_30m
-                        band_name     : "SR_B3"
-                    B04     :
-                        <<: *deafrica_oli_30m
-                        band_name     : "SR_B4"
-                    B05     :
-                        <<: *deafrica_oli_30m
-                        band_name     : "SR_B5"
-                    B06     :
-                        <<: *deafrica_oli_30m
-                        band_name     : "SR_B6"
-                    B07     :
-                        <<: *deafrica_oli_30m
-                        band_name     : "SR_B7"
-                    CLOUD   :
-                        bit_mask      : true
-                        band_name     : "QA_PIXEL"
-                        values        :
-                            0         : "missing_data"
-                            1         : "Dilated Cloud"
-                            2         : "High confidence cirrus"
-                            4         : "High confidence cloud shadow"
-                            5         : "High confidence snow cover"
-                            6         : "Clear"
-                            7         : "Water"
-                            9         : "High confidence of cloud"
-                            11        : "High confidence of cloud shadow"
-                            13        : "High confidence of snow"
-                            15        : "High confidence of cirrus"
-                        interp_values : [0, 1, 2, 3, 4, 5]
-                        resampling    : "near"
-                        resolution    : 30
-                        data_type     : "INT2U"
-                satellite   : "LANDSAT-8"
-                sensor      : "OLI"
-                collection_name: "ls8_sr"
-                access_vars :
+
+            LS5_ST          :
+                bands:
+                    B06:
+                        band_name: "ST_B6"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65535
+                        scale_factor: 0.00341802
+                        offset_value: 149
+                        resampling: "bilinear"
+                    QA:
+                        band_name: "ST_QA"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 32767
+                        scale_factor: 0.01
+                        offset_value: 0
+                        resampling: "bilinear"
+                    DRAD:
+                        band_name: "ST_DRAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 28000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMIS:
+                        band_name: "ST_EMIS"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMSD:
+                        band_name: "ST_EMSD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    TRAD:
+                        band_name: "ST_TRAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 22000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    URAD:
+                        band_name: "ST_URAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 28000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    ATRAN:
+                        band_name: "ST_ATRAN"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    CDIST:
+                        band_name: "ST_CDIST"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 24000
+                        scale_factor: 0.01
+                        offset_value: 0
+                        resampling: "bilinear"
+                    CLOUD:
+                        band_name: "QA_PIXEL"
+                        resolution: 30
+                        data_type: "INT2U"
+                        bit_mask: true
+                        values:
+                            '0': "missing_data"
+                            '1': "Dilated Cloud"
+                            '2': "Unused"
+                            '3': "Cloud"
+                            '4': "Cloud Shadow"
+                            '5': "Snow"
+                            '6': "Clear"
+                            '7': "Water"
+                            '8': "Cloud Confidence"
+                            '9': "Cloud Confidence"
+                            '10': "Cloud Shadow Confidence"
+                            '11': "Cloud Shadow Confidence"
+                            '12': "Snow/Ice Confidence"
+                            '13': "Snow/Ice Confidence"
+                            '14': "Unused"
+                            '15': "Unused"
+                        interp_values: [0, 1, 3, 4, 5]
+                satellite: "LANDSAT-5"
+                sensor: "TIR"
+                collection_name: "ls5_st"
+                access_vars:
                     AWS_DEFAULT_REGION: "af-south-1"
-                    AWS_S3_ENDPOINT   : "s3.af-south-1.amazonaws.com"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
                     AWS_NO_SIGN_REQUEST: true
                 open_data: true
                 open_data_token: false
-                metadata_search : "feature"
+                metadata_search: "tile"
                 ext_tolerance: 0
-                grid_system  : "WRS-2"
+                grid_system: "MGRS"
+            LS7_ST          :
+                bands:
+                    B06:
+                        band_name: "ST_B6"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65535
+                        scale_factor: 0.00341802
+                        offset_value: 149
+                        resampling: "bilinear"
+                    QA:
+                        band_name: "ST_QA"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 32767
+                        scale_factor: 0.01
+                        offset_value: 0
+                        resampling: "bilinear"
+                    DRAD:
+                        band_name: "ST_DRAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 28000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMIS:
+                        band_name: "ST_EMIS"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMSD:
+                        band_name: "ST_EMSD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    TRAD:
+                        band_name: "ST_TRAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 22000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    URAD:
+                        band_name: "ST_URAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 28000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    ATRAN:
+                        band_name: "ST_ATRAN"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    CDIST:
+                        band_name: "ST_CDIST"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 24000
+                        scale_factor: 0.01
+                        offset_value: 0
+                        resampling: "bilinear"
+                    CLOUD:
+                        band_name: "QA_PIXEL"
+                        resolution: 30
+                        data_type: "INT2U"
+                        bit_mask: true
+                        values:
+                            '0': "missing_data"
+                            '1': "Dilated Cloud"
+                            '2': "Unused"
+                            '3': "Cloud"
+                            '4': "Cloud Shadow"
+                            '5': "Snow"
+                            '6': "Clear"
+                            '7': "Water"
+                            '8': "Cloud Confidence"
+                            '9': "Cloud Confidence"
+                            '10': "Cloud Shadow Confidence"
+                            '11': "Cloud Shadow Confidence"
+                            '12': "Snow/Ice Confidence"
+                            '13': "Snow/Ice Confidence"
+                            '14': "Unused"
+                            '15': "Unused"
+                        interp_values: [0, 1, 3, 4, 5]
+                satellite: "LANDSAT-7"
+                sensor: "TIR"
+                collection_name: "ls7_st"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "MGRS"
+            LS8_ST          :
+                bands:
+                    QA:
+                        band_name: "ST_QA"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 32767
+                        scale_factor: 0.01
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B10:
+                        band_name: "ST_B10"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65535
+                        scale_factor: 0.00341802
+                        offset_value: 149
+                        resampling: "bilinear"
+                    DRAD:
+                        band_name: "ST_DRAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 28000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMIS:
+                        band_name: "ST_EMIS"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMSD:
+                        band_name: "ST_EMSD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    TRAD:
+                        band_name: "ST_TRAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 22000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    URAD:
+                        band_name: "ST_URAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 28000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    CLOUD:
+                        band_name: "QA_PIXEL"
+                        resolution: 30
+                        data_type: "INT2U"
+                        bit_mask: true
+                        values:
+                            '0': "missing_data"
+                            '1': "Dilated Cloud"
+                            '2': "Cirrus"
+                            '3': "Cloud"
+                            '4': "Cloud Shadow"
+                            '5': "Snow"
+                            '6': "Clear"
+                            '7': "Water"
+                            '8': "Cloud Confidence"
+                            '9': "Cloud Confidence"
+                            '10': "Cloud Shadow Confidence"
+                            '11': "Cloud Shadow Confidence"
+                            '12': "Snow/Ice Confidence"
+                            '13': "Snow/Ice Confidence"
+                            '14': "Cirrus Confidence"
+                            '15': "Cirrus Confidence"
+                        interp_values: [0, 1, 2, 3, 4, 5]
+                    ATRAN:
+                        band_name: "ST_ATRAN"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    CDIST:
+                        band_name: "ST_CDIST"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 24000
+                        scale_factor: 0.01
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "LANDSAT-8"
+                sensor: "TIRS"
+                collection_name: "ls8_st"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "MGRS"
+            LS9_ST          :
+                bands:
+                    QA:
+                        band_name: "ST_QA"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 32767
+                        scale_factor: 0.01
+                        offset_value: 0
+                        resampling: "bilinear"
+                    B10:
+                        band_name: "ST_B10"
+                        resolution: 30
+                        data_type: "INT2U"
+                        missing_value: 0
+                        minimum_value: 1
+                        maximum_value: 65535
+                        scale_factor: 0.00341802
+                        offset_value: 149
+                        resampling: "bilinear"
+                    DRAD:
+                        band_name: "ST_DRAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 28000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMIS:
+                        band_name: "ST_EMIS"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    EMSD:
+                        band_name: "ST_EMSD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    TRAD:
+                        band_name: "ST_TRAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 22000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    URAD:
+                        band_name: "ST_URAD"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 28000
+                        scale_factor: 0.001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    CLOUD:
+                        band_name: "QA_PIXEL"
+                        resolution: 30
+                        data_type: "INT2U"
+                        bit_mask: true
+                        values:
+                            '0': "missing_data"
+                            '1': "Dilated Cloud"
+                            '2': "Cirrus"
+                            '3': "Cloud"
+                            '4': "Cloud Shadow"
+                            '5': "Snow"
+                            '6': "Clear"
+                            '7': "Water"
+                            '8': "Cloud Confidence"
+                            '9': "Cloud Confidence"
+                            '10': "Cloud Shadow Confidence"
+                            '11': "Cloud Shadow Confidence"
+                            '12': "Snow/Ice Confidence"
+                            '13': "Snow/Ice Confidence"
+                            '14': "Cirrus Confidence"
+                            '15': "Cirrus Confidence"
+                        interp_values: [0, 1, 2, 3, 4, 5]
+                    ATRAN:
+                        band_name: "ST_ATRAN"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 0.0001
+                        offset_value: 0
+                        resampling: "bilinear"
+                    CDIST:
+                        band_name: "ST_CDIST"
+                        resolution: 30
+                        data_type: "INT2S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 24000
+                        scale_factor: 0.01
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "LANDSAT-9"
+                sensor: "TIRS-2"
+                collection_name: "ls9_st"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: "MGRS"
+
+            NDVI_ANOMALY          :
+                bands:
+                    NDVI-MEAN:
+                        band_name: "ndvi_mean"
+                        resolution: 30
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                    NDVI-STD-ANOMALY:
+                        band_name: "ndvi_std_anomaly"
+                        resolution: 30
+                        data_type: "FLT4S"
+                        missing_value: -1
+                        minimum_value: 0
+                        maximum_value: 1
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "LANDSAT-SENTINEL"
+                sensor: "OLI-MSI"
+                collection_name: "ndvi_anomaly"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: ""
+            RAINFALL_CHIRPS_DAILY          :
+                bands:
+                    RAINFALL:
+                        band_name: "rainfall"
+                        resolution: 5000
+                        data_type: "FLT4S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "CHIRPS"
+                sensor: "CHIRPS"
+                collection_name: "rainfall_chirps_daily"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: ""
+            RAINFALL_CHIRPS_MONTHLY          :
+                bands:
+                    RAINFALL:
+                        band_name: "rainfall"
+                        resolution: 5000
+                        data_type: "FLT4S"
+                        missing_value: -9999
+                        minimum_value: 0
+                        maximum_value: 10000
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "CHIRPS"
+                sensor: "CHIRPS"
+                collection_name: "rainfall_chirps_monthly"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: ""
+
+            SENTINEL-1-RTC  :
+                bands       :
+                    VV      :
+                        missing_value : -1
+                        minimum_value : 0
+                        maximum_value : 65534
+                        scale_factor  : 1
+                        offset_value  : 0
+                        resolution    : 20
+                        band_name     : "vv"
+                        data_type     : "FLT4S"
+                    VH     :
+                        missing_value : -1
+                        minimum_value : 0
+                        maximum_value : 65534
+                        scale_factor  : 1
+                        offset_value  : 0
+                        resolution    : 20
+                        band_name     : "vh"
+                        data_type     : "FLT4S"
+                    CLOUD:
+                        band_name: "mask"
+                        resolution: 20
+                        data_type: "INT1U"
+                        bit_mask: true
+                        values:
+                            '0': "Nodata"
+                            '1': "Valid"
+                            '2': "Invalid (in/near radar shadow)"
+                        interp_values: [0, 2]
+                satellite   : "SENTINEL-1"
+                sensor      : "RTC"
+                orbits      : ["ascending", "descending"]
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                collection_name: "s1_rtc"
+                open_data: true
+                open_data_token: false
+                metadata_search: "feature"
+                ext_tolerance: 0
+                grid_system : "MGRS"
+            DEM_COP_30:
+                bands:
+                    ELEVATION:
+                        band_name: "elevation"
+                        resolution: 30
+                        data_type: "FLT4S"
+                        missing_value: -32768
+                        minimum_value: 0
+                        maximum_value: 65534
+                        scale_factor: 1
+                        offset_value: 0
+                        resampling: "bilinear"
+                satellite: "COP-DEM"
+                sensor: "30"
+                collection_name: "dem_cop_30"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: ""
+
+            ALOS_PALSAR_MOSAIC  :
+                bands       :
+                    HH  :
+                        missing_value : 0
+                        minimum_value : 0
+                        maximum_value : 65534
+                        scale_factor  : 1
+                        offset_value  : 0
+                        resolution    : 25
+                        band_name     : "hh"
+                        data_type     : "FLT4S"
+                    HV  :
+                        missing_value : 0
+                        minimum_value : 0
+                        maximum_value : 65534
+                        scale_factor  : 1
+                        offset_value  : 0
+                        resolution    : 25
+                        band_name     : "hv"
+                        data_type     : "FLT4S"
+                    CLOUD:
+                        band_name: "mask"
+                        resolution: 10
+                        data_type: "INT1U"
+                        bit_mask: true
+                        values:
+                            '0': "no_data"
+                            '50': "water"
+                            '100': "lay_over"
+                            '150': "shadowing"
+                            '255': "land"
+                        interp_values: [0, 150]
+                satellite   : "PALSAR"
+                sensor      : "ALOS"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                collection_name: "alos_palsar_mosaic"
+                open_data: true
+                open_data_token: false
+                metadata_search: "feature"
+                ext_tolerance: 0
+                grid_system : ""
+
+            WOFS_LS  :
+                bands:
+                    WATER-MASK:
+                        band_name: "water"
+                        resolution: 30
+                        data_type: "INT1U"
+                        bit_mask: true
+                        missing_value: 1
+                        minimum_value: 0
+                        maximum_value: 255
+                        scale_factor: 1
+                        offset_value: 0
+                        values:
+                            0: "valid data"
+                            1: "non-contiguity"
+                            2: "low solar angle"
+                            3: "terrain shadow"
+                            4: "high slope"
+                            5: "cloud shadow"
+                            6: "cloud"
+                            7: "water observed"
+                        interp_values: [1, 2, 3, 5, 6]
+                satellite: "LANDSAT"
+                sensor: "5-7-8-9"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                collection_name: "wofs_ls"
+                open_data: true
+                open_data_token: false
+                metadata_search: "feature"
+                ext_tolerance: 0
+                grid_system: "WRS-2"
+
+            ESA_CCI_LANDCOVER   :
+                bands:
+                    CLOUD:  # TODO: Validate
+                        band_name: "classification"
+                        resolution: 300
+                        data_type: "INT1U"
+                        bit_mask: true
+                        values:
+                            0: "no data"
+                            10: "cropland, rainfed"
+                            11: "cropland, rainfed, herbaceous cover"
+                            12: "cropland, rainfed, tree or shrub cover"
+                            20: "cropland, irrigated or post-flooding"
+                            30: "mosaic cropland/natural vegetation"
+                            40: "mosaic natural vegetation/cropland"
+                            50: "tree cover, broadleaved, evergreen, closed to open"
+                            60: "tree cover, broadleaved, deciduous, closed to open"
+                            61: "tree cover, broadleaved, deciduous, closed"
+                            62: "tree cover, broadleaved, deciduous, open"
+                            70: "tree cover, needleleaved, evergreen, closed to open"
+                            71: "tree cover, needleleaved, evergreen, closed"
+                            72: "tree cover, needleleaved, evergreen, open"
+                            80: "tree cover, needleleaved, deciduous, closed to open"
+                            81: "tree cover, needleleaved, deciduous, closed"
+                            82: "tree cover, needleleaved, deciduous, open"
+                            90: "tree cover, mixed leaf type"
+                            100: "mosaic tree and shrub/herbaceous cover"
+                            110: "mosaic herbaceous cover/tree and shrub"
+                            120: "shrubland"
+                            121: "shrubland, evergreen"
+                            122: "shrubland, deciduous"
+                            130: "grassland"
+                            140: "lichens and mosses"
+                            150: "sparse vegetation"
+                            151: "sparse tree"
+                            152: "sparse shrub"
+                            153: "sparse herbaceous cover"
+                            160: "tree cover, flooded, fresh or brakish water"
+                            170: "tree cover, flooded, saline water"
+                            180: "shrub or herbaceous cover, flooded, fresh/saline/brakish water"
+                            190: "urban areas"
+                            200: "bare areas"
+                            201: "consolidated bare areas"
+                            202: "unconsolidated bare areas"
+                            210: "water bodies"
+                            220: "permanent snow and ice"
+                        interp_values: [0]
+                satellite: "Envisat/SPOT"
+                sensor: "VGT/MERIS"
+                collection_name: "cci_landcover"
+                access_vars:
+                    AWS_DEFAULT_REGION: "af-south-1"
+                    AWS_S3_ENDPOINT: "s3.af-south-1.amazonaws.com"
+                    AWS_NO_SIGN_REQUEST: true
+                open_data: true
+                open_data_token: false
+                metadata_search: "tile"
+                ext_tolerance: 0
+                grid_system: ""
+
     SDC                     :
         s3_class            : ["sdc_cube", "stac_cube", "eo_cube",
                                "raster_cube"]

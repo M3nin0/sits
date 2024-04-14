@@ -6,17 +6,16 @@
 \usage{
 sits_dtw(
   samples = NULL,
-  threshold = 2,
   start_date = NULL,
   end_date = NULL,
+  window = NULL,
   step = NULL,
-  overlap = NULL
+  threshold = 2,
+  ...
 )
 }
 \arguments{
 \item{samples}{Time series with the training samples.}
-
-\item{threshold}{Threshold used to define if an event was detected.}
 
 \item{start_date}{Initial date of the interval used to calculate DTW.}
 
@@ -27,8 +26,12 @@ DTW moving window, with number and unit,
 where "D", "M" and "Y" stands for days, month and
 year; e.g., "P16D" for 16 days.}
 
-\item{overlap}{ISO8601-compliant time period of the overlap
-between two moving window steps.}
+\item{threshold}{Distance threshold used to define if an event was
+detected.}
+
+\item{...}{Parameters to configure the
+\code{\link[sits_som]{sits_detect_change_method}}
+used to create the temporal patterns of samples.}
 }
 \value{
 Change detection method prepared

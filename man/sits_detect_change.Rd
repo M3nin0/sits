@@ -20,7 +20,7 @@ sits_detect_change(
   cd_method,
   ...,
   filter_fn = NULL,
-  impute_fn = impute_linear(),
+  multicores = 2L,
   progress = TRUE
 )
 
