@@ -1,9 +1,11 @@
-#' @title Create an items object in an DEAfrica cube
+
+#' @title Create an items object in an Digital Earth Africa cube
 #' @keywords internal
 #' @noRd
-#' @description \code{.source_items_new()} this function is called to create
-#' an items object. In case of Web services, this function is responsible for
-#' making the Web requests to the server.
+#' @description
+#'  \code{.source_items_new()} this function is called to create
+#'  an items object. In case of Web services, this function is responsible for
+#'  making the Web requests to the server.
 #' @param source     Name of the STAC provider.
 #' @param ...        Other parameters to be passed for specific types.
 #' @param collection Collection to be searched in the data source.
@@ -48,6 +50,7 @@
     )
     return(items_info)
 }
+
 #' @title Create an items object in an DEAfrica cube
 #' @keywords internal
 #' @noRd
@@ -107,6 +110,7 @@
     )
     return(items_info)
 }
+
 #' @title Organizes items by tiles for DEAfrica collections
 #' @param source     Name of the STAC provider.
 #' @param ...        Other parameters to be passed for specific types.
@@ -120,4 +124,39 @@
                                              items,
                                              collection = NULL) {
     rstac::items_reap(items, field = c("properties", "odc:region_code"))
+}
+
+#' @keywords internal
+#' @noRd
+#' @export
+`.source_items_tile.deafrica_cube_rainfall_chirps_daily` <- function(source,
+                                                                     items, ...,
+                                                                     collection = NULL) {
+    rep("NoTilingSystem", rstac::items_length(items))
+}
+
+#' @keywords internal
+#' @noRd
+#' @export
+`.source_items_tile.deafrica_cube_rainfall_chirps_monthly` <- function(source,
+                                                                       items, ...,
+                                                                       collection = NULL) {
+    rep("NoTilingSystem", rstac::items_length(items))
+}
+
+#' @keywords internal
+#' @noRd
+#' @export
+.source_item_get_date.deafrica_cube <- function(source, item, ..., collection = NULL) {
+    item_date <- item[[c("properties", "datetime")]]
+
+    # Digital Earth Africa provides some products with the `properties.datetime`
+    # property `null`. In those cases, it is required to use other date
+    # parameter available
+    if (is.null(item_date))
+        item_date <- item[[c("properties", "start_datetime")]]
+
+    suppressWarnings(
+        lubridate::as_date(item_date)
+    )
 }
