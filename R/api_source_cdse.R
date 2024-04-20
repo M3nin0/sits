@@ -334,7 +334,7 @@
 #'  requirements of each CDSE data product.
 #' @param product_type Type of the CDSE Product (e.g., S2MSI2A)
 #' @param ...          Additional query parameters.
-#' @param source       Data source
+#' @param source       Data source.
 #' @param collection   Open Search collection endpoint.
 #' @param start_date   Start date.
 #' @param end_date     End date.
@@ -343,7 +343,7 @@
 #'                     should be used.
 #' @param limit        Limit of content to be retrieved per page. Use `paginate`
 #'                     to manage if multiple pages should be requested.
-#' @return             List of features compatible with.
+#' @return             List of features compatible with
 #'                     `rstac` (`rstac::doc_items`).
 #' @export
 .opensearch_cdse_search <- function(product_type,
@@ -395,7 +395,7 @@
                                         orbit = "descending") {
     # Checks - Orbit
     orbits <- .conf("sources", source, "collections", collection, "orbits")
-    .check_chr_within(orbit, orbits)
+    .check_chr_within(orbit, orbits, msg = "Invalid `orbit` value")
     # Search!
     .opensearch_cdse_client(
         product_type,
@@ -520,9 +520,12 @@
                                         stac_query,
                                         tiles = NULL,
                                         orbit = "descending",
-                                        platform = NULL) {
+                                        platform = NULL,
+                                        multicores = 2L) {
     # set caller to show in errors
     .check_set_caller(".source_items_new.cdse_cube")
+    # check parameters
+    .check_multicores(multicores, min = 1, max = 2048)
     # define the maximum number of records per request
     cdse_query_limit <- 1000
     # as CDSE STAC returns many types of items in the same collection,
