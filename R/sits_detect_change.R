@@ -117,8 +117,6 @@ sits_detect_change.raster_cube <- function(data,
         .check_filter_fn(filter_fn)
     # Retrieve the samples from the model
     samples <- .ml_samples(cd_method)
-    # Do the samples and tile match their timeline length?
-    .check_samples_tile_match_timeline(samples = samples, tile = data)
     # Do the samples and tile match their bands?
     .check_samples_tile_match_bands(samples = samples, tile = data)
     # Check memory and multicores
