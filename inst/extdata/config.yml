@@ -10,7 +10,7 @@ sources:
         s3_class            : ["bdc_cube", "stac_cube", "eo_cube",
                                "raster_cube"]
         service             : "STAC"
-        url                 : "https://brazildatacube.dpi.inpe.br/stac/"
+        url                 : "https://data.inpe.br/bdc/stac/v1"
         collections         :
             CBERS-WFI-16D   : &bdc_cb4_awfi
                 bands       :

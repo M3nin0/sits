@@ -133,6 +133,11 @@
     # get connections
     socklist <- lapply(cl, function(x) x$con)
 
+    print('=====')
+    print(socklist)
+    print(class(socklist))
+    print('=====')
+
     # wait for data in socket
     repeat {
         ready <- socketSelect(socklist)
