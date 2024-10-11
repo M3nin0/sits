@@ -208,6 +208,51 @@ sits_regularize.sar_cube <- function(cube, ...,
 
 #' @rdname sits_regularize
 #' @export
+sits_regularize.rainfall_cube <- function(cube, ...,
+                                          period,
+                                          res,
+                                          output_dir,
+                                          roi = NULL,
+                                          tiles = NULL,
+                                          multicores = 2L,
+                                          progress = TRUE) {
+    # Preconditions
+    .check_raster_cube_files(cube)
+    .check_period(period)
+    .check_num_parameter(res, exclusive_min = 0)
+    output_dir <- .file_path_expand(output_dir)
+    .check_output_dir(output_dir)
+    .check_num_parameter(multicores, min = 1, max = 2048)
+    .check_progress(progress)
+    # Check for ROI and tiles
+    .check_roi_tiles(roi, tiles)
+    # Display warning message in case STAC cube
+    # Prepare parallel processing
+    .parallel_start(workers = multicores)
+    on.exit(.parallel_stop(), add = TRUE)
+    # Convert input sentinel1 cube to sentinel2 grid
+    cube <- .reg_s2tile_convert(cube = cube, roi = roi, tiles = tiles)
+    .check_that(nrow(cube) > 0,
+                msg = .conf("messages", "sits_regularize_roi")
+    )
+    # Filter tiles
+    if (is.character(tiles)) {
+        cube <- .cube_filter_tiles(cube, tiles)
+    }
+    # Call regularize in parallel
+    cube <- .reg_cube(
+        cube = cube,
+        res = res,
+        roi = roi,
+        period = period,
+        output_dir = output_dir,
+        progress = progress
+    )
+    return(cube)
+}
+
+#' @rdname sits_regularize
+#' @export
 sits_regularize.dem_cube <- function(cube, ...,
                                      res,
                                      output_dir,
