@@ -30,12 +30,12 @@
         cube <- .cube_filter_spatial(cube = cube, roi = roi)
     }
     # Prepare parallel processing
-    .parallel_start(workers = multicores)
-    on.exit(.parallel_stop(), add = TRUE)
+    # .parallel_start(workers = multicores)
+    # on.exit(.parallel_stop(), add = TRUE)
     # Create assets as jobs
     cube_assets <- .cube_split_assets(cube)
     # Process each asset in parallel
-    cube_assets <- .jobs_map_parallel_dfr(cube_assets, function(asset) {
+    cube_assets <- .jobs_map_sequential_dfr(cube_assets, function(asset) {
         # Get asset file path
         file <- .tile_path(asset)
         output_dir <- .file_path_expand(output_dir)
@@ -63,7 +63,7 @@
         )
         # Return a cropped asset
         asset_cropped
-    }, progress = progress)
+    })
     # Join output assets as a cube
     cube <- .cube_merge_tiles(cube_assets)
     # Return cropped cube

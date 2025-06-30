@@ -431,8 +431,9 @@ sits_classify.raster_cube <- function(data,
     )
     on.exit(.parallel_stop(), add = TRUE)
     # Show processing time information
-    start_time <- .classify_verbose_start(verbose, block)
-    on.exit(.classify_verbose_end(verbose, start_time))
+    # start_time <- .classify_verbose_start(verbose, block)
+    # on.exit(.classify_verbose_end(verbose, start_time), add = TRUE)
+    print('classify verbose')
     # Classification
     # Process each tile sequentially
     .cube_foreach_tile(data, function(tile) {
