@@ -116,6 +116,43 @@ sits_merge.raster_cube <- function(data1, data2, ...) {
 
 #' @rdname sits_merge
 #' @export
+sits_merge.class_cube <- function(data1, ...) {
+    # This is the initial implementation of the merge. The goal is to
+    # combine data from the same region and satellite, accounting for
+    # variations in classification years. In this version, the function is
+    # designed to operate in a very strict manner to minimize the risk of
+    # errors or issues caused by unexpected cases.
+    .check_set_caller("sits_merge_class_cube")
+    # Get cubes
+    cubes <- list(data1, ...)
+    # pre-condition - check cube type
+    lapply(cubes, .check_is_class_cube)
+    # pre-condition - same labels
+    .check_all_equal(lapply(cubes, .cube_labels))
+    # pre-conidition - same classes
+    .check_all_equal(lapply(cubes, class))
+    # Get current classes (assuming they are all equal as checked before)
+    cube_classes <- class(cubes[[1]])
+    # Merge cubes (very restrict group by to avoid errors)
+    cubes <- dplyr::bind_rows(cubes) |>
+        dplyr::group_by(
+            .data[["source"]], .data[["collection"]],
+            .data[["xmin"]], .data[["xmax"]],
+            .data[["ymin"]], .data[["ymax"]],
+            .data[["crs"]], .data[["tile"]]
+        ) |>
+        dplyr::mutate(
+            file_info = list(dplyr::bind_rows(.data[["file_info"]])),
+            labels = list(dplyr::first(.data[["labels"]]))
+        ) |>
+        dplyr::distinct() |>
+        dplyr::ungroup()
+    # Update cube classes
+    .set_class(cubes, cube_classes)
+}
+
+#' @rdname sits_merge
+#' @export
 sits_merge.default <- function(data1, data2, ...) {
     data1 <- tibble::as_tibble(data1)
     if (all(.conf("sits_cube_cols") %in% colnames(data1))) {

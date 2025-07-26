@@ -245,6 +245,22 @@ softmax <- function(values) {
     .Call(`_sits_softmax`, values)
 }
 
+RECUR <- function(data, target_class) {
+    .Call(`_sits_RECUR`, data, target_class)
+}
+
+CONVERT <- function(data, source_class, target_class) {
+    .Call(`_sits_CONVERT`, data, source_class, target_class)
+}
+
+EVOLVE <- function(data, class_i, class_j) {
+    .Call(`_sits_EVOLVE`, data, class_i, class_j)
+}
+
+KEEPS <- function(data, target_class) {
+    .Call(`_sits_KEEPS`, data, target_class)
+}
+
 C_entropy_probs <- function(x) {
     .Call(`_sits_C_entropy_probs`, x)
 }

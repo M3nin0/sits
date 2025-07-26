@@ -2963,3 +2963,16 @@
         )
     )
 }
+#' @title Check all values in a list are equal (combinatory analysis)
+#' @name .check_all_equal
+#' @keywords internal
+#' @noRd
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @author Felipe Carvalho, \email{lipecaso@@gmail.com}
+#' @param data    List to be checked.
+#' @return  No value, called for side effects.
+.check_all_equal <- function(data) {
+    .check_that(all(utils::combn(seq_along(data), 2, \(idx) {
+        identical(data[[idx[1]]], data[[idx[2]]])
+    })))
+}

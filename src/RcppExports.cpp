@@ -841,6 +841,56 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// RECUR
+LogicalVector RECUR(const IntegerMatrix& data, int target_class);
+RcppExport SEXP _sits_RECUR(SEXP dataSEXP, SEXP target_classSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(RECUR(data, target_class));
+    return rcpp_result_gen;
+END_RCPP
+}
+// CONVERT
+LogicalVector CONVERT(const IntegerMatrix& data, int source_class, int target_class);
+RcppExport SEXP _sits_CONVERT(SEXP dataSEXP, SEXP source_classSEXP, SEXP target_classSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type source_class(source_classSEXP);
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(CONVERT(data, source_class, target_class));
+    return rcpp_result_gen;
+END_RCPP
+}
+// EVOLVE
+LogicalVector EVOLVE(const IntegerMatrix& data, int class_i, int class_j);
+RcppExport SEXP _sits_EVOLVE(SEXP dataSEXP, SEXP class_iSEXP, SEXP class_jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type class_i(class_iSEXP);
+    Rcpp::traits::input_parameter< int >::type class_j(class_jSEXP);
+    rcpp_result_gen = Rcpp::wrap(EVOLVE(data, class_i, class_j));
+    return rcpp_result_gen;
+END_RCPP
+}
+// KEEPS
+LogicalVector KEEPS(const IntegerMatrix& data, int target_class);
+RcppExport SEXP _sits_KEEPS(SEXP dataSEXP, SEXP target_classSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(KEEPS(data, target_class));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_entropy_probs
 arma::mat C_entropy_probs(const arma::mat& x);
 RcppExport SEXP _sits_C_entropy_probs(SEXP xSEXP) {
@@ -937,6 +987,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_smooth_whit", (DL_FUNC) &_sits_smooth_whit, 3},
     {"_sits_smooth_whit_mtx", (DL_FUNC) &_sits_smooth_whit_mtx, 3},
     {"_sits_softmax", (DL_FUNC) &_sits_softmax, 1},
+    {"_sits_RECUR", (DL_FUNC) &_sits_RECUR, 2},
+    {"_sits_CONVERT", (DL_FUNC) &_sits_CONVERT, 3},
+    {"_sits_EVOLVE", (DL_FUNC) &_sits_EVOLVE, 3},
+    {"_sits_KEEPS", (DL_FUNC) &_sits_KEEPS, 2},
     {"_sits_C_entropy_probs", (DL_FUNC) &_sits_C_entropy_probs, 1},
     {"_sits_C_margin_probs", (DL_FUNC) &_sits_C_margin_probs, 1},
     {"_sits_C_least_probs", (DL_FUNC) &_sits_C_least_probs, 1},
