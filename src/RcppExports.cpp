@@ -104,6 +104,40 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_Raster_Get_Scale
+NumericVector C_Raster_Get_Scale(std::string filename);
+RcppExport SEXP _sits_C_Raster_Get_Scale(SEXP filenameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_Raster_Get_Scale(filename));
+    return rcpp_result_gen;
+END_RCPP
+}
+// C_Raster_Get_Offset
+NumericVector C_Raster_Get_Offset(std::string filename);
+RcppExport SEXP _sits_C_Raster_Get_Offset(SEXP filenameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_Raster_Get_Offset(filename));
+    return rcpp_result_gen;
+END_RCPP
+}
+// C_Raster_Set_Scale_Offset
+void C_Raster_Set_Scale_Offset(std::string filename, double scale, double offset);
+RcppExport SEXP _sits_C_Raster_Set_Scale_Offset(SEXP filenameSEXP, SEXP scaleSEXP, SEXP offsetSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< double >::type offset(offsetSEXP);
+    C_Raster_Set_Scale_Offset(filename, scale, offset);
+    return R_NilValue;
+END_RCPP
+}
 // C_glcm_contrast
 arma::mat C_glcm_contrast(const arma::vec& x, const arma::vec& angles, const arma::uword nrows, const arma::uword ncols, const arma::uword n_grey, const arma::u8 window_size);
 RcppExport SEXP _sits_C_glcm_contrast(SEXP xSEXP, SEXP anglesSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP n_greySEXP, SEXP window_sizeSEXP) {
@@ -883,6 +917,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_weighted_probs", (DL_FUNC) &_sits_weighted_probs, 2},
     {"_sits_weighted_uncert_probs", (DL_FUNC) &_sits_weighted_uncert_probs, 2},
     {"_sits_dtw_distance", (DL_FUNC) &_sits_dtw_distance, 2},
+    {"_sits_C_Raster_Get_Scale", (DL_FUNC) &_sits_C_Raster_Get_Scale, 1},
+    {"_sits_C_Raster_Get_Offset", (DL_FUNC) &_sits_C_Raster_Get_Offset, 1},
+    {"_sits_C_Raster_Set_Scale_Offset", (DL_FUNC) &_sits_C_Raster_Set_Scale_Offset, 3},
     {"_sits_C_glcm_contrast", (DL_FUNC) &_sits_C_glcm_contrast, 6},
     {"_sits_C_glcm_dissimilarity", (DL_FUNC) &_sits_C_glcm_dissimilarity, 6},
     {"_sits_C_glcm_homogeneity", (DL_FUNC) &_sits_C_glcm_homogeneity, 6},

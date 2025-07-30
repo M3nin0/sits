@@ -363,3 +363,21 @@
     sf_versions <- sf::sf_extSoftVersion()
     sf_versions[["GDAL"]]
 }
+#' @title Get GDAL Version
+#' @author Rolf Simoes, \email{rolfsimoes@@gmail.com}
+#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @noRd
+#' @returns  GDAL Version
+.gdal_raster_scale <- function(filename) {
+    C_Raster_Get_Scale(filename)
+}
+#' @title Get GDAL Version
+#' @author Rolf Simoes, \email{rolfsimoes@@gmail.com}
+#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @noRd
+#' @returns  GDAL Version
+.gdal_raster_offset <- function(filename) {
+    C_Raster_Get_Offset(filename)
+}

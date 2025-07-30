@@ -1707,3 +1707,25 @@ NULL
 .tile_base_info <- function(tile) {
     tile[["base_info"]][[1L]]
 }
+#' @title  Return base info
+#' @name .tile_scale
+#' @keywords internal
+#' @noRd
+#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
+#'
+#' @param  tile       Tile to be plotted
+#' @return            Base info tibble
+.tile_scale <- function(tile) {
+    .gdal_raster_scale(.fi_path(.fi(tile)))
+}
+#' @title  Return base info
+#' @name .tile_offset
+#' @keywords internal
+#' @noRd
+#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
+#'
+#' @param  tile       Tile to be plotted
+#' @return            Base info tibble
+.tile_offset <- function(tile) {
+    .gdal_raster_offset(.fi_path(.fi(tile)))
+}

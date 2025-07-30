@@ -29,6 +29,18 @@ dtw_distance <- function(ts1, ts2) {
     .Call(`_sits_dtw_distance`, ts1, ts2)
 }
 
+C_Raster_Get_Scale <- function(filename) {
+    .Call(`_sits_C_Raster_Get_Scale`, filename)
+}
+
+C_Raster_Get_Offset <- function(filename) {
+    .Call(`_sits_C_Raster_Get_Offset`, filename)
+}
+
+C_Raster_Set_Scale_Offset <- function(filename, scale, offset) {
+    invisible(.Call(`_sits_C_Raster_Set_Scale_Offset`, filename, scale, offset))
+}
+
 C_glcm_contrast <- function(x, angles, nrows, ncols, n_grey, window_size) {
     .Call(`_sits_C_glcm_contrast`, x, angles, nrows, ncols, n_grey, window_size)
 }

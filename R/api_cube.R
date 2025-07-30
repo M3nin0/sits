@@ -1637,15 +1637,26 @@ NULL
 .cube_has_base_info <- function(cube) {
     .has(cube[["base_info"]])
 }
-
+#' @title Return cube sensor
+#' @name .cube_scale
+#' @keywords internal
+#' @noRd
+#'
+#' @param  cube       Raster cube
+#' @return            Cube sensor
 .cube_sensor <- function(cube) {
     .dissolve(slider::slide(cube, .tile_sensor))
 }
-
+#' @title Return cube satellite
+#' @name .cube_scale
+#' @keywords internal
+#' @noRd
+#'
+#' @param  cube       Raster cube
+#' @return            Cube satellite
 .cube_satellite <- function(cube) {
     .dissolve(slider::slide(cube, .tile_satellite))
 }
-
 #' @title  Return cube grid system
 #' @name .cube_grid_system
 #' @keywords internal
@@ -1658,4 +1669,45 @@ NULL
         source = .cube_source(cube),
         collection = .cube_collection(cube)
     )
+}
+#' @title Cube files scale
+#' @name .cube_scale
+#' @keywords internal
+#' @noRd
+#'
+#' @param  cube       Raster cube
+#' @return            Cube files scale
+.cube_scale <- function(cube) {
+    unique(.dissolve(slider::slide(cube, .tile_scale)))
+}
+#' @title  Cube files offset
+#' @name .cube_offset
+#' @keywords internal
+#' @noRd
+#'
+#' @param  cube       Raster cube
+#' @return            Cube files offset
+.cube_offset <- function(cube) {
+    unique(.dissolve(slider::slide(cube, .tile_offset)))
+}
+#' @title  Update scale and offset of cube files
+#' @name .cube_offset
+#' @keywords internal
+#' @noRd
+#'
+#' @param  cube       Raster cube
+#' @param  scale      Data scale
+#' @param  offset     Data offset
+#' @return            Cube files offset
+.cube_update_scale_offset <- function(cube, scale = 1, offset = 0) {
+    dplyr::bind_rows(cube[["file_info"]]) |> slider::slide(function(row) {
+        # Get row file
+        row_file <- row[["path"]]
+        # Update Scale and Offset
+        C_Raster_Set_Scale_Offset(
+            filename = row_file,
+            scale = scale,
+            offset = offset
+        )
+    })
 }

@@ -549,12 +549,15 @@ sits_regularize.ogh_cube <- function(cube, ...,
     if (is.character(tiles)) {
         cube <- .cube_filter_tiles(cube, tiles)
     }
+    # Getting scale and offset (assuming the same to all)
+    cube_scale <- .cube_scale(cube)
+    cube_offset <- .cube_offset(cube)
     # Display warning message in case STAC cube
     # Prepare parallel processing
     .parallel_start(workers = multicores)
     on.exit(.parallel_stop(), add = TRUE)
     # Call regularize in parallel
-    .reg_cube(
+    cube <- .reg_cube(
         cube = cube,
         timeline = timeline,
         res = res,
@@ -563,6 +566,19 @@ sits_regularize.ogh_cube <- function(cube, ...,
         output_dir = output_dir,
         progress = progress
     )
+    # If applicable, update cube files with scale and offset information.
+    if (.has(cube_scale) && .has(cube_offset)) {
+        # This is necessary because some OGH products define these values as
+        # GeoTiff metadata. To avoid conflicts with the definitions in the
+        # source config file, we update them here.
+        .cube_update_scale_offset(
+            cube = cube,
+            scale = cube_scale,
+            offset = cube_offset
+        )
+    }
+    # Return!
+    return(cube)
 }
 #' @rdname sits_regularize
 #' @export
