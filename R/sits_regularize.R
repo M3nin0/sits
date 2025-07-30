@@ -550,8 +550,8 @@ sits_regularize.ogh_cube <- function(cube, ...,
         cube <- .cube_filter_tiles(cube, tiles)
     }
     # Getting scale and offset (assuming the same to all)
-    cube_scale <- .cube_scale(cube)
-    cube_offset <- .cube_offset(cube)
+    # cube_scale <- .cube_scale(cube)
+    # cube_offset <- .cube_offset(cube)
     # Display warning message in case STAC cube
     # Prepare parallel processing
     .parallel_start(workers = multicores)
@@ -566,17 +566,9 @@ sits_regularize.ogh_cube <- function(cube, ...,
         output_dir = output_dir,
         progress = progress
     )
-    # If applicable, update cube files with scale and offset information.
-    if (.has(cube_scale) && .has(cube_offset)) {
-        # This is necessary because some OGH products define these values as
-        # GeoTiff metadata. To avoid conflicts with the definitions in the
-        # source config file, we update them here.
-        .cube_update_scale_offset(
-            cube = cube,
-            scale = cube_scale,
-            offset = cube_offset
-        )
-    }
+    # Reset scale and offset to GDAL default values. This is done as in sits
+    # the source of truth is the config file.
+    .cube_update_scale_offset(cube = cube, scale = 1, offset = 0)
     # Return!
     return(cube)
 }

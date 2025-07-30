@@ -184,6 +184,9 @@ sits_cube_copy <- function(cube,
     class(cube_assets) <- class(cube)
     # Revert tile system name
     cube_assets <- .cube_revert_tile_name(cube_assets)
+    # Reset scale and offset to GDAL default values. This is done as in sits
+    # the source of truth is the config file.
+    .cube_update_scale_offset(cube_assets, scale = 1, offset = 0)
     # Flush token
     .cube_token_flush(cube_assets)
 }
