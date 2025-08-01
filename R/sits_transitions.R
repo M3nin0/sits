@@ -58,6 +58,21 @@ Keeps <- function(target_class) {
         list(target_class = target_class)
     )
 }
+#' @title Holds a class in a given time
+#' @keywords internal
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
+#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
+#'
+#' @param target_class     Target class name to keep
+#' @return expression that creates a HOLDS transition call
+#' @export
+Holds <- function(target_class) {
+    substitute(
+        HOLDS(values, target_class),
+        list(target_class = target_class)
+    )
+}
 #' @title Reclassify a classified cube
 #' @name sits_transitions
 #'

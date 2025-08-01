@@ -261,6 +261,10 @@ KEEPS <- function(data, target_class) {
     .Call(`_sits_KEEPS`, data, target_class)
 }
 
+HOLDS <- function(data, target_class) {
+    .Call(`_sits_HOLDS`, data, target_class)
+}
+
 C_entropy_probs <- function(x) {
     .Call(`_sits_C_entropy_probs`, x)
 }

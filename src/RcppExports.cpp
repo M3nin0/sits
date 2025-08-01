@@ -891,6 +891,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// HOLDS
+LogicalVector HOLDS(const IntegerMatrix& data, int target_class);
+RcppExport SEXP _sits_HOLDS(SEXP dataSEXP, SEXP target_classSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(HOLDS(data, target_class));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_entropy_probs
 arma::mat C_entropy_probs(const arma::mat& x);
 RcppExport SEXP _sits_C_entropy_probs(SEXP xSEXP) {
@@ -991,6 +1003,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_CONVERT", (DL_FUNC) &_sits_CONVERT, 3},
     {"_sits_EVOLVE", (DL_FUNC) &_sits_EVOLVE, 3},
     {"_sits_KEEPS", (DL_FUNC) &_sits_KEEPS, 2},
+    {"_sits_HOLDS", (DL_FUNC) &_sits_HOLDS, 2},
     {"_sits_C_entropy_probs", (DL_FUNC) &_sits_C_entropy_probs, 1},
     {"_sits_C_margin_probs", (DL_FUNC) &_sits_C_margin_probs, 1},
     {"_sits_C_least_probs", (DL_FUNC) &_sits_C_least_probs, 1},

@@ -41,7 +41,7 @@
         fname <- as.character(expr[[1]])
         # Handle special macro functions: Convert, Recur, Keeps
         # These are transformed to uppercase and get 'values' as first argument
-        if (fname %in% c("Convert", "Recur", "Keeps", "Evolve")) {
+        if (fname %in% c("Convert", "Recur", "Keeps", "Evolve", "Holds")) {
             # Convert to uppercase (e.g., Convert -> CONVERT)
             new_fname <- toupper(fname)
             # Extract function arguments (remove function name)

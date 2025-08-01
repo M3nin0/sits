@@ -105,16 +105,30 @@ LogicalVector KEEPS(const IntegerMatrix& data, int target_class) {
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
-        bool all_match = true;
+        bool all_match = data(i, 0) != target_class;
 
-        for (int j = 0; j < ncol; ++j) {
-            if (data(i, j) != target_class) {
-                all_match = false;
-                break;
+        if (all_match) {
+            for (int j = 0; j < ncol; ++j) {
+                if (data(i, j) != target_class) {
+                    all_match = false;
+                    break;
+                }
             }
         }
 
         result[i] = all_match;
+    }
+
+    return result;
+}
+
+// [[Rcpp::export]]
+LogicalVector HOLDS(const IntegerMatrix& data, int target_class) {
+    int nrow = data.nrow();
+    LogicalVector result(nrow, false);
+
+    for (int i = 0; i < nrow; ++i) {
+        result[i] = data(i, 0) == target_class;
     }
 
     return result;
