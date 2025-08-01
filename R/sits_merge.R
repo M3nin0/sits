@@ -142,6 +142,10 @@ sits_merge.class_cube <- function(data1, ...) {
             .data[["crs"]], .data[["tile"]]
         ) |>
         dplyr::mutate(
+            file_info = (
+                dplyr::bind_rows(.data[["file_info"]]) |>
+                    dplyr::mutate(end_date = .data[["start_date"]])
+            ),
             file_info = list(dplyr::bind_rows(.data[["file_info"]])),
             labels = list(dplyr::first(.data[["labels"]]))
         ) |>
