@@ -35,13 +35,18 @@
 #' - Parentheses
 #' - String literals (replaced with numeric indices)
 .transitions_expand_expr <- function(expr, labels) {
+    # Define name of predicate names available in C++
+    available_predictors <- c(
+        "Convert", "Recur", "Keeps", "Evolve",
+        "Starts", "Ends", "Persist", "Peaks"
+    )
     # Check if expression is a function call
     if (is.call(expr)) {
         # Extract function name from the call
         fname <- as.character(expr[[1]])
         # Handle special macro functions: Convert, Recur, Keeps
         # These are transformed to uppercase and get 'values' as first argument
-        if (fname %in% c("Convert", "Recur", "Keeps", "Evolve", "Holds")) {
+        if (fname %in% available_predictors) {
             # Convert to uppercase (e.g., Convert -> CONVERT)
             new_fname <- toupper(fname)
             # Extract function arguments (remove function name)

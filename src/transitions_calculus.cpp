@@ -105,9 +105,12 @@ LogicalVector KEEPS(const IntegerMatrix& data, int target_class) {
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
-        bool all_match = data(i, 0) != target_class;
+        bool all_match = false;
+        bool starts_with_target_class = data(i, 0) == target_class;
 
-        if (all_match) {
+        if (starts_with_target_class) {
+            all_match = true;
+
             for (int j = 0; j < ncol; ++j) {
                 if (data(i, j) != target_class) {
                     all_match = false;
@@ -123,12 +126,62 @@ LogicalVector KEEPS(const IntegerMatrix& data, int target_class) {
 }
 
 // [[Rcpp::export]]
-LogicalVector HOLDS(const IntegerMatrix& data, int target_class) {
+LogicalVector PERSIST(const IntegerMatrix& data, int target_class, int size) {
+    int nrow = data.nrow();
+    int ncol = data.ncol();
+
+    LogicalVector result(nrow, false);
+
+    for (int i = 0; i < nrow; ++i) {
+
+        int last_idx = -1;
+        int current_duration = 0;
+
+        for (int t = 0; t < ncol; ++t) {
+            if (data(i, t) == target_class) {
+
+                if (last_idx == t - 1) {
+                    current_duration += 1;
+                } else {
+                    current_duration = 1;
+                }
+
+                last_idx = t;
+            }
+        }
+
+        result[i] = current_duration == size;
+    }
+
+    return result;
+}
+
+// [[Rcpp::export]]
+LogicalVector PEAKS(const IntegerMatrix& data, int target_class) {
+    return PERSIST(data, target_class, 1);
+}
+
+// [[Rcpp::export]]
+LogicalVector STARTS(const IntegerMatrix& data, int target_class) {
     int nrow = data.nrow();
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
         result[i] = data(i, 0) == target_class;
+    }
+
+    return result;
+}
+
+// [[Rcpp::export]]
+LogicalVector ENDS(const IntegerMatrix& data, int target_class) {
+    int nrow = data.nrow();
+    int ncol = data.ncol() - 1;
+
+    LogicalVector result(nrow, false);
+
+    for (int i = 0; i < nrow; ++i) {
+        result[i] = data(i, ncol) == target_class;
     }
 
     return result;

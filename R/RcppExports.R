@@ -261,8 +261,20 @@ KEEPS <- function(data, target_class) {
     .Call(`_sits_KEEPS`, data, target_class)
 }
 
-HOLDS <- function(data, target_class) {
-    .Call(`_sits_HOLDS`, data, target_class)
+PERSIST <- function(data, target_class, size) {
+    .Call(`_sits_PERSIST`, data, target_class, size)
+}
+
+PEAKS <- function(data, target_class) {
+    .Call(`_sits_PEAKS`, data, target_class)
+}
+
+STARTS <- function(data, target_class) {
+    .Call(`_sits_STARTS`, data, target_class)
+}
+
+ENDS <- function(data, target_class) {
+    .Call(`_sits_ENDS`, data, target_class)
 }
 
 C_entropy_probs <- function(x) {

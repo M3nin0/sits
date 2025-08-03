@@ -1,3 +1,56 @@
+#' @title Starts transition function
+#' @keywords internal
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
+#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
+#'
+#' @param target_class     Target class name for the transition
+#' @return expression that creates a STARTS transition call
+#' @export
+Starts <- function(target_class) {
+    substitute(STARTS(values, target_class),
+               list(target_class = target_class))
+}
+#' @title Ends transition function
+#' @keywords internal
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
+#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
+#'
+#' @param target_class     Target class name for the transition
+#' @return expression that creates a ENDS transition call
+#' @export
+Ends <- function(target_class) {
+    substitute(ENDS(values, target_class),
+               list(target_class = target_class))
+}
+#' @title Persist transition function
+#' @keywords internal
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
+#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
+#'
+#' @param target_class     Target class name for the transition
+#' @param size             Temporal interval size
+#' @return expression that creates a PERSIST transition call
+#' @export
+Persist <- function(target_class, size) {
+    substitute(PERSIST(values, target_class, size),
+               list(target_class = target_class, size = size))
+}
+#' @title Peaks transition function
+#' @keywords internal
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
+#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
+#'
+#' @param target_class     Target class name for the transition
+#' @return expression that creates a PEAKS transition call
+#' @export
+Peaks <- function(target_class) {
+    substitute(PEAKS(values, target_class),
+               list(target_class = target_class))
+}
 #' @title Recur transition function
 #' @keywords internal
 #' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
@@ -55,21 +108,6 @@ Evolve <- function(source_class, target_class) {
 Keeps <- function(target_class) {
     substitute(
         KEEPS(values, target_class),
-        list(target_class = target_class)
-    )
-}
-#' @title Holds a class in a given time
-#' @keywords internal
-#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
-#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
-#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
-#'
-#' @param target_class     Target class name to keep
-#' @return expression that creates a HOLDS transition call
-#' @export
-Holds <- function(target_class) {
-    substitute(
-        HOLDS(values, target_class),
         list(target_class = target_class)
     )
 }
