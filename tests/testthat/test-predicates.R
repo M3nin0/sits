@@ -72,6 +72,45 @@ test_that("Ends works as expected", {
     expect_equal(sum(res), 1)
 })
 
+test_that("Edges works as expected", {
+    # Define data
+    values <- matrix(c(
+        1, 1, 1, 0, 2,
+        2, 2, 2, 2, NA,
+        1, 0, 1, 1, 1,
+        0, 0, 0, 0, 0,
+        1, 1, 0, 1, 1,
+        0, 1, 1, 1, 0,
+        0, 0, 0, 0, 9
+    ), nrow = 7, byrow = TRUE)
+
+    # Visualize data
+    # [,1] [,2] [,3] [,4] [,5]
+    # [1,]    1    1    1    0    2
+    # [2,]    2    2    2    2    NA
+    # [3,]    1    0    1    1    1
+    # [4,]    0    0    0    0    0
+    # [5,]    1    1    0    1    1
+    # [6,]    0    1    1    1    0
+    # [7,]    0    0    0    0    9
+
+    # Test ends of class '0'
+    res <- EDGES(values, 0)
+    expect_equal(sum(res), 2)
+
+    # Test ends of class '1'
+    res <- EDGES(values, 1)
+    expect_equal(sum(res), 2)
+
+    # Test ends of class '2' (NA)
+    res <- EDGES(values, 2)
+    expect_equal(sum(res), 0)
+
+    # Test ends of class '9'
+    res <- EDGES(values, 9)
+    expect_equal(sum(res), 0)
+})
+
 test_that("Persist works as expected", {
     # Define data
     values <- matrix(c(

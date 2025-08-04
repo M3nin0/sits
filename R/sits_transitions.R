@@ -24,6 +24,19 @@ Ends <- function(target_class) {
     substitute(ENDS(values, target_class),
                list(target_class = target_class))
 }
+#' @title Edges transition function (start and end are equal in the series)
+#' @keywords internal
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
+#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
+#'
+#' @param target_class     Target class name for the transition
+#' @return expression that creates a EDGES transition call
+#' @export
+Edges <- function(target_class) {
+    substitute(EDGES(values, target_class),
+               list(target_class = target_class))
+}
 #' @title Persist transition function
 #' @keywords internal
 #' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}

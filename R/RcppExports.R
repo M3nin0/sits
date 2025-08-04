@@ -277,6 +277,10 @@ ENDS <- function(data, target_class) {
     .Call(`_sits_ENDS`, data, target_class)
 }
 
+EDGES <- function(data, target_class) {
+    .Call(`_sits_EDGES`, data, target_class)
+}
+
 C_entropy_probs <- function(x) {
     .Call(`_sits_C_entropy_probs`, x)
 }

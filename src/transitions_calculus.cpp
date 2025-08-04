@@ -234,3 +234,22 @@ LogicalVector ENDS(const IntegerMatrix& data, int target_class) {
 
     return result;
 }
+
+// [[Rcpp::export]]
+LogicalVector EDGES(const IntegerMatrix& data, int target_class) {
+    int nrow = data.nrow();
+    int ncol = data.ncol() - 1;
+
+    LogicalVector result(nrow, false);
+
+    for (int i = 0; i < nrow; ++i) {
+        // To avoid false positives, we skip rows with NA
+        if (has_na(data, i)) {
+            continue;
+        }
+
+        result[i] = data(i, 0) == target_class && data(i, ncol) == target_class;
+    }
+
+    return result;
+}

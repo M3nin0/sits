@@ -940,6 +940,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// EDGES
+LogicalVector EDGES(const IntegerMatrix& data, int target_class);
+RcppExport SEXP _sits_EDGES(SEXP dataSEXP, SEXP target_classSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(EDGES(data, target_class));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_entropy_probs
 arma::mat C_entropy_probs(const arma::mat& x);
 RcppExport SEXP _sits_C_entropy_probs(SEXP xSEXP) {
@@ -1044,6 +1056,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_PEAKS", (DL_FUNC) &_sits_PEAKS, 2},
     {"_sits_STARTS", (DL_FUNC) &_sits_STARTS, 2},
     {"_sits_ENDS", (DL_FUNC) &_sits_ENDS, 2},
+    {"_sits_EDGES", (DL_FUNC) &_sits_EDGES, 2},
     {"_sits_C_entropy_probs", (DL_FUNC) &_sits_C_entropy_probs, 1},
     {"_sits_C_margin_probs", (DL_FUNC) &_sits_C_margin_probs, 1},
     {"_sits_C_least_probs", (DL_FUNC) &_sits_C_least_probs, 1},

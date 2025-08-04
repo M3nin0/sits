@@ -38,7 +38,8 @@
     # Define name of predicate names available in C++
     available_predictors <- c(
         "Convert", "Recur", "Keeps", "Evolve",
-        "Starts", "Ends", "Persist", "Peaks"
+        "Starts", "Ends", "Persist", "Peaks",
+        "Edges"
     )
     # Check if expression is a function call
     if (is.call(expr)) {
