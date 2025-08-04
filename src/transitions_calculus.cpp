@@ -3,6 +3,18 @@
 using namespace std;
 using namespace Rcpp;
 
+bool has_na(const IntegerMatrix& data, int row) {
+    int ncol = data.ncol();
+
+    for (int j = 0; j < ncol; ++j) {
+        if (IntegerMatrix::is_na(data(row, j))) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // [[Rcpp::export]]
 LogicalVector RECUR(const IntegerMatrix& data, int target_class) {
     int nrow = data.nrow();
@@ -12,6 +24,11 @@ LogicalVector RECUR(const IntegerMatrix& data, int target_class) {
 
     for (int i = 0; i < nrow; ++i) {
         std::vector<int> indices;
+
+        // To avoid false positives, we skip rows with NA
+        if (has_na(data, i)) {
+            continue;
+        }
 
         // Step 1: Find positions of target_class in the row
         for (int t = 0; t < ncol; ++t) {
@@ -53,6 +70,12 @@ LogicalVector CONVERT(const IntegerMatrix& data, int source_class, int target_cl
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
+
+        // To avoid false positives, we skip rows with NA
+        if (has_na(data, i)) {
+            continue;
+        }
+
         for (int t = 0; t < ncol - 1; ++t) {
             if (data(i, t) == source_class && data(i, t + 1) == target_class) {
                 result[i] = true;
@@ -74,6 +97,11 @@ LogicalVector EVOLVE(const IntegerMatrix& data, int class_i, int class_j) {
     for (int i = 0; i < nrow; ++i) {
         int first_i = -1;
         int first_j = -1;
+
+        // To avoid false positives, we skip rows with NA
+        if (has_na(data, i)) {
+            continue;
+        }
 
         for (int t = 0; t < ncol; ++t) {
             if (first_i != -1 && first_j != -1) {
@@ -108,6 +136,11 @@ LogicalVector KEEPS(const IntegerMatrix& data, int target_class) {
         bool all_match = false;
         bool starts_with_target_class = data(i, 0) == target_class;
 
+        // To avoid false positives, we skip rows with NA
+        if (has_na(data, i)) {
+            continue;
+        }
+
         if (starts_with_target_class) {
             all_match = true;
 
@@ -133,9 +166,13 @@ LogicalVector PERSIST(const IntegerMatrix& data, int target_class, int size) {
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
-
         int last_idx = -1;
         int current_duration = 0;
+
+        // To avoid false positives, we skip rows with NA
+        if (has_na(data, i)) {
+            continue;
+        }
 
         for (int t = 0; t < ncol; ++t) {
             if (data(i, t) == target_class) {
@@ -167,6 +204,12 @@ LogicalVector STARTS(const IntegerMatrix& data, int target_class) {
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
+
+        // To avoid false positives, we skip rows with NA
+        if (has_na(data, i)) {
+            continue;
+        }
+
         result[i] = data(i, 0) == target_class;
     }
 
@@ -181,6 +224,11 @@ LogicalVector ENDS(const IntegerMatrix& data, int target_class) {
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
+        // To avoid false positives, we skip rows with NA
+        if (has_na(data, i)) {
+            continue;
+        }
+
         result[i] = data(i, ncol) == target_class;
     }
 
