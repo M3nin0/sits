@@ -245,6 +245,10 @@ softmax <- function(values) {
     .Call(`_sits_softmax`, values)
 }
 
+transition_neighbor_analysis <- function(data, reference_class, neighbor_class) {
+    .Call(`_sits_transition_neighbor_analysis`, data, reference_class, neighbor_class)
+}
+
 RECUR <- function(data, target_class) {
     .Call(`_sits_RECUR`, data, target_class)
 }

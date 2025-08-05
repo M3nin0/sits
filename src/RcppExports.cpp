@@ -841,6 +841,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// transition_neighbor_analysis
+NumericMatrix transition_neighbor_analysis(NumericMatrix data, int reference_class, int neighbor_class);
+RcppExport SEXP _sits_transition_neighbor_analysis(SEXP dataSEXP, SEXP reference_classSEXP, SEXP neighbor_classSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type reference_class(reference_classSEXP);
+    Rcpp::traits::input_parameter< int >::type neighbor_class(neighbor_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(transition_neighbor_analysis(data, reference_class, neighbor_class));
+    return rcpp_result_gen;
+END_RCPP
+}
 // RECUR
 LogicalVector RECUR(const IntegerMatrix& data, int target_class);
 RcppExport SEXP _sits_RECUR(SEXP dataSEXP, SEXP target_classSEXP) {
@@ -1048,6 +1061,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_smooth_whit", (DL_FUNC) &_sits_smooth_whit, 3},
     {"_sits_smooth_whit_mtx", (DL_FUNC) &_sits_smooth_whit_mtx, 3},
     {"_sits_softmax", (DL_FUNC) &_sits_softmax, 1},
+    {"_sits_transition_neighbor_analysis", (DL_FUNC) &_sits_transition_neighbor_analysis, 3},
     {"_sits_RECUR", (DL_FUNC) &_sits_RECUR, 2},
     {"_sits_CONVERT", (DL_FUNC) &_sits_CONVERT, 3},
     {"_sits_EVOLVE", (DL_FUNC) &_sits_EVOLVE, 3},
