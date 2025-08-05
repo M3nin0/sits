@@ -245,6 +245,10 @@ softmax <- function(values) {
     .Call(`_sits_softmax`, values)
 }
 
+C_matrix_na_rows <- function(data) {
+    .Call(`_sits_C_matrix_na_rows`, data)
+}
+
 RECUR <- function(data, target_class) {
     .Call(`_sits_RECUR`, data, target_class)
 }
@@ -279,6 +283,10 @@ ENDS <- function(data, target_class) {
 
 EDGES <- function(data, target_class) {
     .Call(`_sits_EDGES`, data, target_class)
+}
+
+DOMINATES <- function(data, target_class, size) {
+    .Call(`_sits_DOMINATES`, data, target_class, size)
 }
 
 C_entropy_probs <- function(x) {

@@ -37,6 +37,20 @@ Edges <- function(target_class) {
     substitute(EDGES(values, target_class),
                list(target_class = target_class))
 }
+#' @title Dominates transition function
+#' @keywords internal
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @author Felipe Carvalho, \email{felipe.carvalho@@inpe.br}
+#' @author Gilberto Camara, \email{gilberto.camara@@inpe.br}
+#'
+#' @param target_class     Target class name for the transition
+#' @param size             Neighborhood size
+#' @return expression that creates a DOMINATES transition call
+#' @export
+Dominates <- function(target_class, size) {
+    substitute(DOMINATES(values, target_class, size),
+               list(target_class = target_class, size = size))
+}
 #' @title Persist transition function
 #' @keywords internal
 #' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}

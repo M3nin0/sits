@@ -841,6 +841,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_matrix_na_rows
+LogicalVector C_matrix_na_rows(const IntegerMatrix& data);
+RcppExport SEXP _sits_C_matrix_na_rows(SEXP dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type data(dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_matrix_na_rows(data));
+    return rcpp_result_gen;
+END_RCPP
+}
 // RECUR
 LogicalVector RECUR(const IntegerMatrix& data, int target_class);
 RcppExport SEXP _sits_RECUR(SEXP dataSEXP, SEXP target_classSEXP) {
@@ -952,6 +963,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// DOMINATES
+LogicalVector DOMINATES(const IntegerMatrix& data, int target_class, int size);
+RcppExport SEXP _sits_DOMINATES(SEXP dataSEXP, SEXP target_classSEXP, SEXP sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    Rcpp::traits::input_parameter< int >::type size(sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(DOMINATES(data, target_class, size));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_entropy_probs
 arma::mat C_entropy_probs(const arma::mat& x);
 RcppExport SEXP _sits_C_entropy_probs(SEXP xSEXP) {
@@ -1048,6 +1072,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_smooth_whit", (DL_FUNC) &_sits_smooth_whit, 3},
     {"_sits_smooth_whit_mtx", (DL_FUNC) &_sits_smooth_whit_mtx, 3},
     {"_sits_softmax", (DL_FUNC) &_sits_softmax, 1},
+    {"_sits_C_matrix_na_rows", (DL_FUNC) &_sits_C_matrix_na_rows, 1},
     {"_sits_RECUR", (DL_FUNC) &_sits_RECUR, 2},
     {"_sits_CONVERT", (DL_FUNC) &_sits_CONVERT, 3},
     {"_sits_EVOLVE", (DL_FUNC) &_sits_EVOLVE, 3},
@@ -1057,6 +1082,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_STARTS", (DL_FUNC) &_sits_STARTS, 2},
     {"_sits_ENDS", (DL_FUNC) &_sits_ENDS, 2},
     {"_sits_EDGES", (DL_FUNC) &_sits_EDGES, 2},
+    {"_sits_DOMINATES", (DL_FUNC) &_sits_DOMINATES, 3},
     {"_sits_C_entropy_probs", (DL_FUNC) &_sits_C_entropy_probs, 1},
     {"_sits_C_margin_probs", (DL_FUNC) &_sits_C_margin_probs, 1},
     {"_sits_C_least_probs", (DL_FUNC) &_sits_C_least_probs, 1},

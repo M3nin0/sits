@@ -39,7 +39,7 @@
     available_predictors <- c(
         "Convert", "Recur", "Keeps", "Evolve",
         "Starts", "Ends", "Persist", "Peaks",
-        "Edges"
+        "Edges", "Dominates"
     )
     # Check if expression is a function call
     if (is.call(expr)) {
@@ -233,6 +233,8 @@
     transitions_fn <- function(values) {
         # Used to check values (below)
         input_pixels <- nrow(values)
+        # NA Pixels
+        values_na_rows <- C_matrix_na_rows(values)
         # New evaluation environment
         env <- list2env(list(
             values = values
@@ -253,6 +255,8 @@
             }
             values[result] <- label
         }
+        # Remove results in pixels with NA values
+        values[values_na_rows] <- 0
         # Get values as numeric
         values <- matrix(
             data = labels_code[match(values, labels)],

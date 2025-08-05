@@ -7,7 +7,7 @@ test_that("Starts works as expected", {
         1, 0, 1, 1, 1,
         0, 0, 0, 0, 0,
         1, 1, 0, 1, 1,
-        0, 1, NA, 1, 0
+        0, 1, 1, 1, 0
     ), nrow = 6, byrow = TRUE)
 
     # Visualize data
@@ -17,12 +17,12 @@ test_that("Starts works as expected", {
     # [3,]    1    0    1    1    1
     # [4,]    0    0    0    0    0
     # [5,]    1    1    0    1    1
-    # [6,]    0    1    NA    1    0
+    # [6,]    0    1    1    1    0
 
     # Tests
-    # Test starts of class '0' (NA)
+    # Test starts of class '0'
     res <- STARTS(values, 0)
-    expect_equal(sum(res), 1)
+    expect_equal(sum(res), 2)
 
     # Test starts of class '1'
     res <- STARTS(values, 1)
@@ -37,7 +37,7 @@ test_that("Ends works as expected", {
     # Define data
     values <- matrix(c(
         1, 1, 1, 0, 2,
-        2, 2, 2, 2, NA,
+        2, 2, 2, 2, 2,
         1, 0, 1, 1, 1,
         0, 0, 0, 0, 0,
         1, 1, 0, 1, 1,
@@ -48,7 +48,7 @@ test_that("Ends works as expected", {
     # Visualize data
     # [,1] [,2] [,3] [,4] [,5]
     # [1,]    1    1    1    0    2
-    # [2,]    2    2    2    2    NA
+    # [2,]    2    2    2    2    2
     # [3,]    1    0    1    1    1
     # [4,]    0    0    0    0    0
     # [5,]    1    1    0    1    1
@@ -65,18 +65,18 @@ test_that("Ends works as expected", {
 
     # Test ends of class '2'
     res <- ENDS(values, 2)
-    expect_equal(sum(res), 1)
+    expect_equal(sum(res), 2)
 
     # Test ends of class '9'
     res <- ENDS(values, 9)
     expect_equal(sum(res), 1)
 })
 
-test_that("Edges works as expected", {
+test_that("Persist works as expected", {
     # Define data
     values <- matrix(c(
         1, 1, 1, 0, 2,
-        2, 2, 2, 2, NA,
+        2, 2, 2, 2, 2,
         1, 0, 1, 1, 1,
         0, 0, 0, 0, 0,
         1, 1, 0, 1, 1,
@@ -87,55 +87,16 @@ test_that("Edges works as expected", {
     # Visualize data
     # [,1] [,2] [,3] [,4] [,5]
     # [1,]    1    1    1    0    2
-    # [2,]    2    2    2    2    NA
+    # [2,]    2    2    2    2    2
     # [3,]    1    0    1    1    1
     # [4,]    0    0    0    0    0
     # [5,]    1    1    0    1    1
     # [6,]    0    1    1    1    0
     # [7,]    0    0    0    0    9
 
-    # Test ends of class '0'
-    res <- EDGES(values, 0)
-    expect_equal(sum(res), 2)
-
-    # Test ends of class '1'
-    res <- EDGES(values, 1)
-    expect_equal(sum(res), 2)
-
-    # Test ends of class '2' (NA)
-    res <- EDGES(values, 2)
-    expect_equal(sum(res), 0)
-
-    # Test ends of class '9'
-    res <- EDGES(values, 9)
-    expect_equal(sum(res), 0)
-})
-
-test_that("Persist works as expected", {
-    # Define data
-    values <- matrix(c(
-        1, 1, 1, 0, 2,
-        2, 2, 2, NA, 2,
-        1, 0, 1, 1, 1,
-        0, 0, 0, 0, 0,
-        1, 1, 0, 1, 1,
-        0, 1, 1, 1, NA,
-        0, 0, 0, 0, 9
-    ), nrow = 7, byrow = TRUE)
-
-    # Visualize data
-    # [,1] [,2] [,3] [,4] [,5]
-    # [1,]    1    1    1    0    2
-    # [2,]    2    2    2    2    2
-    # [3,]    1    0    1    1    1
-    # [4,]    0    0    0    0    0
-    # [5,]    1    1    0    1    1
-    # [6,]    0    1    1    1    NA
-    # [7,]    0    0    0    0    9
-
     # Test persist of class '0'
     res <- PERSIST(values, 0, 1)
-    expect_equal(sum(res), 3)
+    expect_equal(sum(res), 4)
 
     res <- PERSIST(values, 0 , 5)
     expect_equal(sum(res), 1)
@@ -143,9 +104,9 @@ test_that("Persist works as expected", {
     res <- PERSIST(values, 0, 2)
     expect_equal(sum(res), 0)
 
-    # Test persist of class '1' (NA)
+    # Test persist of class '1'
     res <- PERSIST(values, 1, 3)
-    expect_equal(sum(res), 2)
+    expect_equal(sum(res), 3)
 
     res <- PERSIST(values, 1, 2)
     expect_equal(sum(res), 1)
@@ -168,7 +129,7 @@ test_that("Peaks works as expected", {
         0, 0, 0, 0, 0,
         1, 1, 0, 1, 1,
         0, 1, 1, 1, 0,
-        0, 0, NA, 0, 9
+        0, 0, 0, 0, 9
     ), nrow = 7, byrow = TRUE)
 
     # Visualize data
@@ -179,7 +140,7 @@ test_that("Peaks works as expected", {
     # [4,]    0    0    0    0    0
     # [5,]    1    1    0    1    1
     # [6,]    0    1    1    1    0
-    # [7,]    0    0    NA    0    9
+    # [7,]    0    0    0    0    9
 
     # Test peaks of class '0'
     res <- PEAKS(values, 0)
@@ -190,9 +151,10 @@ test_that("Peaks works as expected", {
     res <- PEAKS(values, 1)
     expect_equal(sum(res), 0)
 
-    # Test peaks of class '9' (NA)
+    # Test peaks of class '9'
     res <- PEAKS(values, 9)
-    expect_equal(sum(res), 0)
+    expect_true(res[length(res)] == TRUE)
+    expect_equal(sum(res), 1)
 })
 
 test_that("Recur works as expected", {
@@ -202,7 +164,7 @@ test_that("Recur works as expected", {
         2, 2, 2, 2, 2,
         1, 0, 1, 1, 1,
         0, 0, 0, 0, 0,
-        1, NA, 0, 1, 1,
+        1, 1, 0, 1, 1,
         0, 1, 1, 1, 0,
         0, 0, 0, 0, 9
     ), nrow = 7, byrow = TRUE)
@@ -213,7 +175,7 @@ test_that("Recur works as expected", {
     # [2,]    2    2    2    2    2
     # [3,]    1    0    1    1    1
     # [4,]    0    0    0    0    0
-    # [5,]    1    NA   0    1    1
+    # [5,]    1    1    0    1    1
     # [6,]    0    1    1    1    0
     # [7,]    0    0    0    0    9
 
@@ -221,10 +183,10 @@ test_that("Recur works as expected", {
     res <- RECUR(values, 0)
     expect_equal(sum(res), 1)
 
-    # Test recur of class '1' (NA)
+    # Test recur of class '1'
     res <- RECUR(values, 1)
-    expect_equal(which(res), 3)
-    expect_equal(sum(res), 1)
+    expect_equal(which(res), c(3, 5))
+    expect_equal(sum(res), 2)
 
     # Test recur of class '2'
     res <- RECUR(values, 2)
@@ -241,7 +203,7 @@ test_that("Convert works as expected", {
         1, 1, 0, 1, 1,
         0, 1, 1, 1, 0,
         0, 0, 0, 0, 9,
-        0, NA, 4, 1, 19
+        0, 4, 4, 1, 19
     ), nrow = 8, byrow = TRUE)
 
     # Visualize data
@@ -253,7 +215,7 @@ test_that("Convert works as expected", {
     # [5,]    1    1    0    1    1
     # [6,]    0    1    1    1    0
     # [7,]    0    0    0    0    9
-    # [8,]    0    NA    4    1   19
+    # [8,]    0    4    4    1   19
 
     # Tests
     # Test convert of class '0'
@@ -281,7 +243,7 @@ test_that("Convert works as expected", {
     expect_equal(sum(res), 4)
 
     res <- CONVERT(values, 1, 19)
-    expect_equal(sum(res), 0)
+    expect_equal(sum(res), 1)
 
     res <- CONVERT(values, 1, 1)
     expect_equal(sum(res), 4)
@@ -290,7 +252,7 @@ test_that("Convert works as expected", {
 test_that("Evolve works as expected", {
     # Define data
     values <- matrix(c(
-        1, NA, 1, 0, 2,
+        1, 1, 1, 0, 2,
         2, 2, 2, 2, 2,
         1, 0, 1, 1, 1,
         0, 0, 0, 0, 0,
@@ -302,7 +264,7 @@ test_that("Evolve works as expected", {
 
     # Visualize data
     # [,1] [,2] [,3] [,4] [,5]
-    # [1,]    1    NA    1   0    2
+    # [1,]    1    1    1    0    2
     # [2,]    2    2    2    2    2
     # [3,]    1    0    1    1    1
     # [4,]    0    0    0    0    0
@@ -312,9 +274,9 @@ test_that("Evolve works as expected", {
     # [8,]    0    4    4    1   19
 
     # Tests
-    # Test evolve of class '0' (NA)
+    # Test evolve of class '0'
     res <- EVOLVE(values, 0, 2)
-    expect_equal(sum(res), 0)
+    expect_equal(sum(res), 1)
 
     res <- EVOLVE(values, 0, 9)
     expect_equal(sum(res), 1)
@@ -325,9 +287,9 @@ test_that("Evolve works as expected", {
     res <- EVOLVE(values, 9, 99)
     expect_equal(sum(res), 0)
 
-    # Test evolve of class '1' (NA)
+    # Test evolve of class '1'
     res <- EVOLVE(values, 1, 2)
-    expect_equal(sum(res), 0)
+    expect_equal(sum(res), 1)
 
     res <- EVOLVE(values, 1, 19)
     expect_equal(sum(res), 1)
@@ -347,7 +309,7 @@ test_that("Keeps works as expected", {
         1, 1, 0, 1, 1,
         0, 1, 1, 1, 0,
         0, 0, 0, 0, 9,
-        5, NA, 5, 5, 5,
+        5, 5, 5, 5, 5,
         5, 5, 5, 5, 5
     ), nrow = 9, byrow = TRUE)
 
@@ -360,7 +322,7 @@ test_that("Keeps works as expected", {
     # [5,]    1    1    0    1    1
     # [6,]    0    1    1    1    0
     # [7,]    0    0    0    0    9
-    # [8,]    5    NA    5    5    5
+    # [8,]    5    5    5    5    5
     # [9,]    5    5    5    5    5
 
     # Test keeps of class '0'
@@ -372,10 +334,85 @@ test_that("Keeps works as expected", {
     res <- KEEPS(values, 1)
     expect_equal(sum(res), 0)
 
-    # Test keeps of class '5' (NA)
+    # Test keeps of class '5'
     res <- KEEPS(values, 5)
+    expect_equal(sum(res), 2)
+    expect_equal(which(res), c(8, 9))
+})
+
+test_that("Edges works as expected", {
+    # Define data
+    values <- matrix(c(
+        1, 1, 1, 0, 2,
+        2, 2, 2, 2, 2,
+        1, 0, 1, 1, 1,
+        0, 0, 0, 0, 0,
+        1, 1, 0, 1, 1,
+        0, 1, 1, 1, 0,
+        0, 0, 0, 0, 9
+    ), nrow = 7, byrow = TRUE)
+
+    # Visualize data
+    # [,1] [,2] [,3] [,4] [,5]
+    # [1,]    1    1    1    0    2
+    # [2,]    2    2    2    2    NA
+    # [3,]    1    0    1    1    1
+    # [4,]    0    0    0    0    0
+    # [5,]    1    1    0    1    1
+    # [6,]    0    1    1    1    0
+    # [7,]    0    0    0    0    9
+
+    # Test ends of class '0'
+    res <- EDGES(values, 0)
+    expect_equal(sum(res), 2)
+
+    # Test ends of class '1'
+    res <- EDGES(values, 1)
+    expect_equal(sum(res), 2)
+
+    # Test ends of class '2'
+    res <- EDGES(values, 2)
     expect_equal(sum(res), 1)
-    expect_equal(which(res), 9)
+
+    # Test ends of class '9'
+    res <- EDGES(values, 9)
+    expect_equal(sum(res), 0)
+})
+
+test_that("Dominates works as expected", {
+    # Define data
+    values <- matrix(c(
+        1, 1, 1, 0, 2,
+        2, 2, 2, 2, 2,
+        1, 0, 1, 1, 1,
+        0, 0, 0, 0, 0,
+        1, 1, 0, 1, 1,
+        0, 1, 1, 1, 0,
+        0, 0, 0, 0, 9,
+        5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5
+    ), nrow = 9, byrow = TRUE)
+
+    # Visualize data
+    # [,1] [,2] [,3] [,4] [,5]
+    # [1,]    1    1    1    0    2
+    # [2,]    2    2    2    2    2
+    # [3,]    1    0    1    1    1
+    # [4,]    0    0    0    0    0
+    # [5,]    1    1    0    1    1
+    # [6,]    0    1    1    1    0
+    # [7,]    0    0    0    0    9
+    # [8,]    5    5    5    5    5
+    # [9,]    5    5    5    5    5
+
+    # Test dominates of class '0'
+    res <- DOMINATES(values, 1, 1)
+    expect_equal(sum(res), 3)
+    expect_equal(which(res), c(1, 3, 6))
+
+    # Test dominates of class '1'
+    res <- DOMINATES(values, 5, 2)
+    expect_equal(sum(res), 2)
 })
 
 test_that("Expressions conversion as expected", {
@@ -442,6 +479,20 @@ test_that("Expressions conversion as expected", {
     # Keeps
     expr <- substitute(Keeps("Class 2"))
     expected <- substitute(KEEPS(values, 2L))
+
+    expr <- .transitions_expand_expr(expr, labels)
+    expect_true(identical(expr, expected))
+
+    # Edges
+    expr <- substitute(Edges("Class 2"))
+    expected <- substitute(EDGES(values, 2L))
+
+    expr <- .transitions_expand_expr(expr, labels)
+    expect_true(identical(expr, expected))
+
+    # Dominates
+    expr <- substitute(Dominates("Class 1", 3))
+    expected <- substitute(DOMINATES(values, 1L, 3))
 
     expr <- .transitions_expand_expr(expr, labels)
     expect_true(identical(expr, expected))
@@ -523,7 +574,7 @@ test_that("Expressions call works as expected", {
         0, 1, 1, 1, 0,
         0, 0, 0, 0, 9,
         0, 4, 4, 1, 19,
-        5, 5, NA, 5, 5,
+        5, 5, 5, 5, 5,
         5, 5, 5, 5, 5
     ), nrow = 10, byrow = TRUE)
 
@@ -547,7 +598,7 @@ test_that("Expressions call works as expected", {
     # [6,]    0    1    1    1    0
     # [7,]    0    0    0    0    9
     # [8,]    0    4    4    1   19
-    # [9,]    5    5    NA    5    5
+    # [9,]    5    5    5    5    5
     # [10,]   5    5    5    5    5
 
     # Define evaluation environment
@@ -566,7 +617,7 @@ test_that("Expressions call works as expected", {
     expr <- .transitions_expand_expr(expr, labels)
     res <- eval(expr, envir = env)
 
-    expect_equal(sum(res), 5)
+    expect_equal(sum(res), 6)
 
     # Expression 2 - Ends
     expr <- substitute(Ends("Class 19"))
@@ -658,5 +709,5 @@ test_that("Expressions call works as expected", {
     expr <- .transitions_expand_expr(expr, labels)
     res <- eval(expr, envir = env)
 
-    expect_equal(sum(res), 2)
+    expect_equal(sum(res), 3)
 })

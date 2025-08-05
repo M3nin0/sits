@@ -3,16 +3,23 @@
 using namespace std;
 using namespace Rcpp;
 
-bool has_na(const IntegerMatrix& data, int row) {
+// [[Rcpp::export]]
+LogicalVector C_matrix_na_rows(const IntegerMatrix& data) {
+    int nrow = data.nrow();
     int ncol = data.ncol();
 
-    for (int j = 0; j < ncol; ++j) {
-        if (IntegerMatrix::is_na(data(row, j))) {
-            return true;
+    LogicalVector result(nrow, false);
+
+    for (int i = 0; i < nrow; i++) {
+        for (int j = 0; j < ncol; j++) {
+            if (IntegerMatrix::is_na(data(i, j))) {
+                result[i] = true;
+                break;
+            }
         }
     }
 
-    return false;
+    return result;
 }
 
 // [[Rcpp::export]]
@@ -24,11 +31,6 @@ LogicalVector RECUR(const IntegerMatrix& data, int target_class) {
 
     for (int i = 0; i < nrow; ++i) {
         std::vector<int> indices;
-
-        // To avoid false positives, we skip rows with NA
-        if (has_na(data, i)) {
-            continue;
-        }
 
         // Step 1: Find positions of target_class in the row
         for (int t = 0; t < ncol; ++t) {
@@ -71,11 +73,6 @@ LogicalVector CONVERT(const IntegerMatrix& data, int source_class, int target_cl
 
     for (int i = 0; i < nrow; ++i) {
 
-        // To avoid false positives, we skip rows with NA
-        if (has_na(data, i)) {
-            continue;
-        }
-
         for (int t = 0; t < ncol - 1; ++t) {
             if (data(i, t) == source_class && data(i, t + 1) == target_class) {
                 result[i] = true;
@@ -97,11 +94,6 @@ LogicalVector EVOLVE(const IntegerMatrix& data, int class_i, int class_j) {
     for (int i = 0; i < nrow; ++i) {
         int first_i = -1;
         int first_j = -1;
-
-        // To avoid false positives, we skip rows with NA
-        if (has_na(data, i)) {
-            continue;
-        }
 
         for (int t = 0; t < ncol; ++t) {
             if (first_i != -1 && first_j != -1) {
@@ -136,11 +128,6 @@ LogicalVector KEEPS(const IntegerMatrix& data, int target_class) {
         bool all_match = false;
         bool starts_with_target_class = data(i, 0) == target_class;
 
-        // To avoid false positives, we skip rows with NA
-        if (has_na(data, i)) {
-            continue;
-        }
-
         if (starts_with_target_class) {
             all_match = true;
 
@@ -168,11 +155,6 @@ LogicalVector PERSIST(const IntegerMatrix& data, int target_class, int size) {
     for (int i = 0; i < nrow; ++i) {
         int last_idx = -1;
         int current_duration = 0;
-
-        // To avoid false positives, we skip rows with NA
-        if (has_na(data, i)) {
-            continue;
-        }
 
         for (int t = 0; t < ncol; ++t) {
             if (data(i, t) == target_class) {
@@ -204,12 +186,6 @@ LogicalVector STARTS(const IntegerMatrix& data, int target_class) {
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
-
-        // To avoid false positives, we skip rows with NA
-        if (has_na(data, i)) {
-            continue;
-        }
-
         result[i] = data(i, 0) == target_class;
     }
 
@@ -224,11 +200,6 @@ LogicalVector ENDS(const IntegerMatrix& data, int target_class) {
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
-        // To avoid false positives, we skip rows with NA
-        if (has_na(data, i)) {
-            continue;
-        }
-
         result[i] = data(i, ncol) == target_class;
     }
 
@@ -243,12 +214,57 @@ LogicalVector EDGES(const IntegerMatrix& data, int target_class) {
     LogicalVector result(nrow, false);
 
     for (int i = 0; i < nrow; ++i) {
-        // To avoid false positives, we skip rows with NA
-        if (has_na(data, i)) {
-            continue;
-        }
-
         result[i] = data(i, 0) == target_class && data(i, ncol) == target_class;
+    }
+
+    return result;
+}
+
+// [[Rcpp::export]]
+LogicalVector DOMINATES(const IntegerMatrix& data, int target_class, int size) {
+    int nrow = data.nrow();
+    int ncol = data.ncol();
+
+    LogicalVector result(nrow, false);
+
+    for (int i = 0; i < nrow; ++i) {
+        for (int j = 0; j < ncol; ++j) {
+
+            if (data(i, j) != target_class) {
+                continue;
+            }
+
+            // Define the left and right limits
+            int left_start = j - size;
+            int right_end = j + size;
+
+            // Check bounds
+            if (left_start < 0 || right_end >= ncol) {
+                continue;
+            }
+
+            int left_dominations = 0;
+            int right_dominations = 0;
+
+            // Check left neighbors
+            for (int lt = j - 1; lt >= left_start; --lt) {
+                if (data(i, lt) == target_class) {
+                    left_dominations += 1;
+                }
+            }
+
+            // Check right neighbors
+            for (int rt = j + 1; rt <= right_end; ++rt) {
+                if (data(i, rt) == target_class) {
+                    right_dominations += 1;
+                }
+            }
+
+            if (left_dominations == size && right_dominations == size) {
+                result[i] = true;
+                break;
+            }
+        }
     }
 
     return result;
