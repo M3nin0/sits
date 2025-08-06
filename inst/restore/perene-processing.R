@@ -125,63 +125,51 @@ files <- c(
 #     paste0("nrow = ", terra::nrow(rst), " | ", "ncol = ", terra::ncol(rst))
 # })
 
-output_dir <- "/data/experiments/water-mask-variations/data/derived/masks/mask-mcti-v3/transitions/test-reclassify-temporal"
+version <- "v2"
+
+base_output_dir <- fs::path("/data/experiments/water-mask-variations/data/derived/masks/mask-mcti-v3/transitions/test-reclassify-temporal/")
+output_dir <- base_output_dir / version
+
 fs::dir_create(output_dir)
 
-ismain <- TRUE
+# if "Ag_perene" -> "vegetacao_secundaria" -> "Ag_perene", then transform "vegetacao_secundaria" to "Ag_perene"
+reclassified_file <- reclassify_timeseries_chunk(
+    files = files,
+    reference_class_number = 12, # 12 = "vegetacao_secundaria"
+    neighbor_class_number = 2, # 2 = "Ag_perene"
+    multicores = 16,
+    memsize = 100,
+    version = version,
+    output_dir = output_dir
+)
 
-if (ismain) {
-    # if "Ag_perene" -> "vegetacao_secundaria" -> "Ag_perene", then transform "vegetacao_secundaria" to "Ag_perene"
-    reclassified_file <- reclassify_timeseries_chunk(
-        files = files,
-        reference_class_number = 12, # 12 = "vegetacao_secundaria"
-        neighbor_class_number = 2, # 2 = "Ag_perene"
-        multicores = 16,
-        memsize = 100,
-        version = "v3",
-        output_dir = output_dir
+reclassified_raster <- terra::rast(reclassified_file)
+
+for (idx in seq_len(length(files))) {
+    file_path <- files[[idx]]
+    file_out_path <- stringr::str_replace(file_path, ".tif", "-perene-reclass.tif")
+
+    message("Processing: ",
+            basename(reclassified_file),
+            " → ",
+            basename(file_out_path))
+
+    sf::gdal_utils(
+        util = "translate",
+        source = as.character(fs::path_expand(reclassified_file)),
+        destination = file_out_path,
+        options = sits:::.gdal_params(
+            list(
+                "-b"     = as.character(idx),
+                "-of"    = "GTiff",
+                "-co"    = "TILED=YES",
+                "-co"    = "COMPRESS=LZW",
+                "-co"    = "INTERLEAVE=BAND",
+                "-co"    =  "PREDICTOR=2"
+            )
+        ),
+        quiet = FALSE
     )
 
-    reclassified_raster <- terra::rast(reclassified_file)
-
-    for (idx in seq_len(length(files))) {
-        file_path <- files[[idx]]
-        file_out_path <- stringr::str_replace(file_path, ".tif", "-perene-reclass.tif")
-
-        message("Processing: ",
-                basename(reclassified_file),
-                " → ",
-                basename(file_out_path))
-
-        sf::gdal_utils(
-            util = "translate",
-            source = as.character(fs::path_expand(reclassified_file)),
-            destination = file_out_path,
-            options = sits:::.gdal_params(
-                list(
-                    "-b"     = as.character(idx),
-                    "-of"    = "GTiff",
-                    "-co"    = "TILED=YES",
-                    "-co"    = "COMPRESS=LZW",
-                    "-co"    = "INTERLEAVE=BAND",
-                    "-co"    =  "PREDICTOR=2"
-                )
-            ),
-            quiet = FALSE
-        )
-
-        sf::gdal_addo(file_out_path)
-    }
-
-    # cmd <- "gdal_translate"
-    # args <- c(
-    #     "-b", as.character(idx),
-    #     "-of", "GTiff",
-    #     "-co", "TILED=YES",
-    #     "-co", "COMPRESS=LZW",
-    #     "-co", "COPY_SRC_OVERVIEWS=YES",
-    #     shQuote(as.character(reclassified_file)),
-    #     shQuote(file_out_path)
-    # )
-    # system2(cmd, args)
+    sf::gdal_addo(file_out_path)
 }
