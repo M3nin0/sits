@@ -7,6 +7,8 @@ NumericMatrix transition_neighbor_analysis(NumericMatrix data, int reference_cla
     int npixel = data.nrow();
     int nyear = data.ncol();
 
+    NumericVector result(npixel, -1);
+
     if (nyear != 10) {
         stop("Expected exactly 10 years (columns), but got " + std::to_string(nyear));
     }
@@ -18,7 +20,7 @@ NumericMatrix transition_neighbor_analysis(NumericMatrix data, int reference_cla
             bool valid_class = data(i, j + 1) == reference_class;
 
             if (valid_class && valid_neihbor) {
-                data(i, j+1) = reference_class;
+                data(i, j + 1) = reference_class;
             }
         }
     }
