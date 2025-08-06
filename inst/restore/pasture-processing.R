@@ -23,22 +23,22 @@ reclassify_timeseries_chunk <- function(files,
         ncols = sits:::.raster_ncols(rast_template)
     )
 
-    block <- .raster_file_blocksize(.raster_open_rast(files))
+    block <- sits:::.raster_file_blocksize(sits:::.raster_open_rast(files))
     # Check minimum memory needed to process one block
-    job_block_memsize <- .jobs_block_memsize(
-        block_size = .block_size(block = block, overlap = 0),
+    job_block_memsize <- sits:::.jobs_block_memsize(
+        block_size = sits:::.block_size(block = block, overlap = 0),
         npaths = (length(files) * terra::nlyr(rast_template)),
         nbytes = 8,
-        proc_bloat = .conf("processing_bloat")
+        proc_bloat = sits:::.conf("processing_bloat")
     )
     # Update multicores parameter based on size of a single block
-    multicores <- .jobs_max_multicores(
+    multicores <- sits:::.jobs_max_multicores(
         job_block_memsize = job_block_memsize,
         memsize = memsize,
         multicores = multicores
     )
     # Update block parameter based on the size of memory and number of cores
-    block <- .jobs_optimal_block(
+    block <- sits:::.jobs_optimal_block(
         job_block_memsize = job_block_memsize,
         block = block,
         image_size = image_size,
@@ -125,7 +125,7 @@ files <- c(
 #     paste0("nrow = ", terra::nrow(rst), " | ", "ncol = ", terra::ncol(rst))
 # })
 
-output_dir <- "~/reclassify-pasture"
+output_dir <- "/data/experiments/water-mask-variations/data/derived/masks/mask-mcti-v3/transitions/test-reclassify-temporal"
 fs::dir_create(output_dir)
 
 ismain <- TRUE
@@ -138,7 +138,7 @@ if (ismain) {
         neighbor_class_number = 2, # 2 = "Ag_perene"
         multicores = 16,
         memsize = 100,
-        version = "v2",
+        version = "v3",
         output_dir = output_dir
     )
 
