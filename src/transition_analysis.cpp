@@ -33,18 +33,13 @@ NumericMatrix transition_neighbor_analysis(NumericMatrix data, int reference_cla
 
             if (valid_class && valid_neihbor) {
                 data(i, j + 1) = neighbor_class;
+
+                // 9 means the last time step
+                // 6 means the last iteration for the moving window
+                if (j == 6 && data(i, 9) == reference_class) {
+                    data(i, nyear - 1) = neighbor_class;
+                }
             }
-
-            // valid iterations (value of j)
-            // 0
-            // 3
-            // 6
-            // 9
-        }
-
-        // processing last pixel (out of the rules presented before)
-        if (data(i, nyear - 1) == reference_class) {
-            data(i, nyear - 1) = neighbor_class;
         }
     }
 
