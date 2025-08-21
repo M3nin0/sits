@@ -16,6 +16,12 @@ sits_lighttae(
   lr_decay_rate = 1,
   patience = 20L,
   min_delta = 0.01,
+  layers_spatial_encoder = c(32L, 64L, 128L),
+  n_heads = 16L,
+  n_neurons = c(256L, 128L),
+  dropout_rate = 0.2,
+  dim_input_decoder = 128L,
+  dim_layers_decoder = c(64L, 32L),
   verbose = FALSE
 )
 }

@@ -120,6 +120,12 @@ sits_lighttae <- function(samples = NULL,
                           lr_decay_rate = 1.0,
                           patience = 20L,
                           min_delta = 0.01,
+                          layers_spatial_encoder = c(32L, 64L, 128L),
+                          n_heads = 16L,
+                          n_neurons = c(256L, 128L),
+                          dropout_rate = 0.2,
+                          dim_input_decoder = 128L,
+                          dim_layers_decoder = c(64L, 32L),
                           verbose = FALSE) {
     # set caller for error msg
     .check_set_caller("sits_lighttae")
@@ -211,12 +217,12 @@ sits_lighttae <- function(samples = NULL,
             initialize = function(n_bands,
                                   n_labels,
                                   timeline,
-                                  layers_spatial_encoder = c(32L, 64L, 128L),
-                                  n_heads = 16L,
-                                  n_neurons = c(256L, 128L),
-                                  dropout_rate = 0.2,
-                                  dim_input_decoder = 128L,
-                                  dim_layers_decoder = c(64L, 32L)) {
+                                  layers_spatial_encoder,
+                                  n_heads,
+                                  n_neurons,
+                                  dropout_rate,
+                                  dim_input_decoder,
+                                  dim_layers_decoder) {
                 # define an spatial encoder
                 self$spatial_encoder <-
                     .torch_pixel_spatial_encoder(
@@ -267,7 +273,13 @@ sits_lighttae <- function(samples = NULL,
             luz::set_hparams(
                 n_bands  = n_bands,
                 n_labels = n_labels,
-                timeline = timeline
+                timeline = timeline,
+                layers_spatial_encoder = layers_spatial_encoder,
+                n_heads = n_heads,
+                n_neurons = n_neurons,
+                dropout_rate = dropout_rate,
+                dim_input_decoder = dim_input_decoder,
+                dim_layers_decoder = dim_layers_decoder
             ) |>
             luz::set_opt_hparams(
                 !!!optim_params_function
