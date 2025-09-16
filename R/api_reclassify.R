@@ -190,7 +190,7 @@
             nrow = input_pixels
         )
         # Mask NA values
-        values[is.na(env[["mask"]])] <- NA
+        # values[is.na(env[["mask"]])] <- NA
         # Are the results consistent with the data input?
         .check_processed_values(values, input_pixels)
         # Return values
