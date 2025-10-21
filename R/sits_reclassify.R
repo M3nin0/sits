@@ -132,7 +132,8 @@ sits_reclassify.class_cube <- function(cube, ...,
                                        multicores = 2L,
                                        output_dir,
                                        version = "v1",
-                                       progress = TRUE) {
+                                       progress = TRUE,
+                                       stream_mode = TRUE) {
     # Preconditions
     .check_raster_cube_files(cube)
     # # check mask
@@ -172,7 +173,9 @@ sits_reclassify.class_cube <- function(cube, ...,
     )
     # Prepare parallelization
     .parallel_start(workers = multicores)
-    on.exit(.parallel_stop(), add = TRUE)
+    if (!stream_mode) {
+        on.exit(.parallel_stop(), add = TRUE)
+    }
     # Capture expression
     rules <- as.list(substitute(rules, environment()))[-1L]
     # Reclassify parameters checked in reclassify function

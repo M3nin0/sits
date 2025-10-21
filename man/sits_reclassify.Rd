@@ -17,7 +17,8 @@ sits_reclassify(cube, ...)
   multicores = 2L,
   output_dir,
   version = "v1",
-  progress = TRUE
+  progress = TRUE,
+  stream_mode = TRUE
 )
 
 \method{sits_reclassify}{default}(cube, ...)
