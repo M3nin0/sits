@@ -33,7 +33,13 @@
             update_bbox = FALSE
         )
         # Update tile labels
-        class_tile <- .tile_update_label(class_tile, labels)
+        class_tile <- .tile_update_label(
+            tile = class_tile,
+            labels = labels,
+            multicores = multicores,
+            memsize = memsize
+        )
+
         return(class_tile)
     }
     # Create chunks as jobs
