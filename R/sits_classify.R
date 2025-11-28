@@ -394,7 +394,7 @@ sits_classify.raster_cube <- function(data,
     bands <- setdiff(.ml_bands(ml_model), base_bands)
 
     # Update multicores for models with internal parallel processing
-    multicores <- .ml_update_multicores(ml_model, multicores)
+    # multicores <- .ml_update_multicores(ml_model, multicores)
 
     # The following functions define optimal parameters for parallel processing
     # Get block size
@@ -428,9 +428,13 @@ sits_classify.raster_cube <- function(data,
         memsize = memsize,
         multicores = multicores
     )
+
+    block[["ncols"]] <- 512
+    block[["nrows"]] <- 512
+
     # Prepare parallel processing
     .parallel_start(
-        workers = multicores, log = verbose,
+        workers = 1, log = verbose,
         output_dir = output_dir
     )
     on.exit(.parallel_stop(), add = TRUE)

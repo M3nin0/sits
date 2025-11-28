@@ -552,3 +552,67 @@
         dim(self$x)[[1L]]
     }
 )
+
+.torch_read_dataset <- torch::dataset(
+    "dataset",
+    initialize = function(tile, chunks, bands, base_bands, ml_model, impute_fn, filter_fn) {
+        self$tile <- tile
+        self$chunks <- chunks
+        self$bands <- bands
+        self$base_bands <- base_bands
+        self$ml_model <- ml_model
+        self$impute_fn <- impute_fn
+        self$filter_fn <- filter_fn
+    },
+    .getitem = function(i) {
+        # if (length(self$dim) == 3L) {
+        #     item_data <- self$x[i, , , drop = FALSE]
+        # } else {
+        #     item_data <- self$x[i, , drop = FALSE]
+        # }
+        browser()
+        chunk <- self$chunks[i, ]
+        block <- .block(chunk)
+
+        values <- .classify_data_read(
+            tile = self$tile,
+            block = block,
+            bands = self$bands,
+            base_bands = self$base_bands,
+            ml_model = self$ml_model,
+            impute_fn = self$impute_fn,
+            filter_fn = self$filter_fn
+        )
+
+        # Get mask of NA pixels
+        na_mask <- C_mask_na(values)
+
+        # Fill with zeros remaining NA pixels
+        values <- C_fill_na(values, 0.0)
+
+        n_samples <- nrow(values)
+        n_times <- length(.samples_timeline(.ml_samples(self$ml_model)))
+        n_bands <- length(.samples_bands(.ml_samples(self$ml_model)))
+
+        list(torch::torch_tensor(
+            array(values, dim = c(
+                n_samples, n_times, n_bands
+            ))
+        ))
+    },
+    .getbatch = function(i) {
+        unlist(purrr::map(i, self$.getitem))
+    },
+    .length = function() {
+        nrow(self$chunks)
+    }
+)
+
+.torch_dataloader_iter <- function(dataloader) {
+    torch::dataloader_make_iter(dataloader)
+}
+
+.torch_dataloader_next <- function(iter) {
+    torch::dataloader_next(iter)
+}
+

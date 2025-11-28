@@ -106,96 +106,159 @@
         # Update bbox to account for ROI
         update_bbox <- nrow(chunks) != nchunks
     }
-    # Process jobs in parallel - one job per chunk
-    block_files <- .jobs_map_parallel_chr(chunks, function(chunk) {
-        # Retrive block to be processed
-        block <- .block(chunk)
-        # Create a temporary block file name
-        block_file <- .file_block_name(
-            pattern = .file_pattern(out_file),
-            block = block,
-            output_dir = output_dir
-        )
-        # Resume processing in case of failure
-        if (.raster_is_valid(block_file)) {
-            return(block_file)
+
+    # Get batch size
+    batch_size <- sits_env[["batch_size"]]
+
+    dataset <- .torch_read_dataset(
+        tile = tile,
+        chunks = chunks,
+        bands = bands,
+        base_bands = base_bands,
+        ml_model = ml_model,
+        impute_fn = impute_fn,
+        filter_fn = filter_fn
+    )
+
+    dataloader <- torch::dataloader(dataset, batch_size = 1, num_workers = 5)
+
+    # browser()
+    # dataset$.getitem(1)
+
+    # dataset$.getitem(1) # -> 512x512
+    # batch_size (?) 32 -> 32x512x512
+
+    # 50 chunks (512x512)
+    # 10 workers
+    # 10 chunks
+
+    # dataloader <- torch::dataloader(dataset, batch_size = 1)
+
+    # dataloader <- torch::dataloader(dataset, batch_size = 1, shuffle = TRUE, num_workers = num_workers)
+    # dataloader_iter = .torch_dataloader_iter(dataloader)
+
+    # dataloader_data <- 1
+
+    # while(!is.null(values <- .torch_dataloader_next(dataloader_iter))) {
+    #
+    #
+    #
+    #     # dataloader_data <- dataloader_data + batch
+    #
+    # }
+
+    # x = 1
+    # while (!is.null(batch <<- dataloader_next(iter))) {
+    #     # avoid any optimization
+    #     x = x + batch
+    #     ml_model(x)
+    # }
+    # x
+
+    ml_model(
+        dataloader = dataloader,
+        callback   = function(values) {
+            # Normalize and calibrate the values
+            # Perform softmax for torch models,
+            values <- .ml_normalize(values, ml_model)
+            # Are the results consistent with the data input?
+            .check_processed_values(
+                values = values,
+                input_pixels = input_pixels
+            )
+            # Log end of block
+            .debug_log(
+                event = "end_block_data_classification",
+                key = "model",
+                value = .ml_class(ml_model)
+            )
+            # Obtain configuration parameters for probability cube
+            band_conf <- .conf_derived_band(
+                derived_class = "probs_cube",
+                band = out_band
+            )
+            # Apply scaling to classified values
+            band_scale <- .scale(band_conf)
+            values <- values / band_scale
+            # Put NA back in the result
+            # values[na_mask, ] <- NA
+            # Log start of block saving
+            #.debug_log(
+            #    event = "start_block_data_save",
+            #    key = "file",
+            #    value = block_file
+            #)
+            # Prepare and save results as raster
+            # .raster_write_block(
+            #   files = block_file,
+            #    block = block,
+            #    bbox = .bbox(chunk),
+            #    values = values,
+            #    data_type = .data_type(band_conf),
+            #    missing_value = .miss_value(band_conf),
+            #    crop_block = chunk[["mask"]]
+            #)
+            # Log end of block saving
+            # .debug_log(
+            #     event = "end_block_data_save",
+            #     key = "file",
+            #     value = block_file
+            # )
+            # Free memory
+            # gc()
+            # Returned block file
+            # block_file
         }
-        # Read and preprocess values from files
-        values <- .classify_data_read(
-            tile = tile,
-            block = block,
-            bands = bands,
-            base_bands = base_bands,
-            ml_model = ml_model,
-            impute_fn = impute_fn,
-            filter_fn = filter_fn
-        )
-        # Get mask of NA pixels
-        na_mask <- C_mask_na(values)
-        # Fill with zeros remaining NA pixels
-        values <- C_fill_na(values, 0.0)
-        # Define control variable to check for correct termination
-        input_pixels <- nrow(values)
-        # Start log file
-        .debug_log(
-            event = "start_block_data_classification",
-            key = "model",
-            value = .ml_class(ml_model)
-        )
-        # Apply the classification model to values
-        # Uses the closure created by sits_train
-        values <-  ml_model(values)
-        # Normalize and calibrate the values
-        # Perform softmax for torch models,
-        values <- .ml_normalize(values, ml_model)
-        # Are the results consistent with the data input?
-        .check_processed_values(
-            values = values,
-            input_pixels = input_pixels
-        )
-        # Log end of block
-        .debug_log(
-            event = "end_block_data_classification",
-            key = "model",
-            value = .ml_class(ml_model)
-        )
-        # Obtain configuration parameters for probability cube
-        band_conf <- .conf_derived_band(
-            derived_class = "probs_cube",
-            band = out_band
-        )
-        # Apply scaling to classified values
-        band_scale <- .scale(band_conf)
-        values <- values / band_scale
-        # Put NA back in the result
-        values[na_mask, ] <- NA
-        # Log start of block saving
-        .debug_log(
-            event = "start_block_data_save",
-            key = "file",
-            value = block_file
-        )
-        # Prepare and save results as raster
-        .raster_write_block(
-            files = block_file,
-            block = block,
-            bbox = .bbox(chunk),
-            values = values,
-            data_type = .data_type(band_conf),
-            missing_value = .miss_value(band_conf),
-            crop_block = chunk[["mask"]]
-        )
-        # Log end of block saving
-        .debug_log(
-            event = "end_block_data_save",
-            key = "file",
-            value = block_file
-        )
-        # Free memory
-        gc()
-        # Returned block file
-        block_file
-    }, progress = progress)
+    )
+
+    # values <- ml_model(dataloader = dataloader,  save_fnc = function(values) {
+    #
+    #
+    #
+    #
+    #     # Apply the classification model to values
+    #     # Uses the closure created by sits_train
+    #     values <-  ml_model(values)
+    #
+    #
+    # })
+
+    # # Process jobs in parallel - one job per chunk
+    # block_files <- .jobs_map_parallel_chr(chunks, function(chunk) {
+    #     # Retrive block to be processed
+    #     block <- .block(chunk)
+    #
+    #
+    #
+    #
+    #     # Create a temporary block file name
+    #     block_file <- .file_block_name(
+    #         pattern = .file_pattern(out_file),
+    #         block = block,
+    #         output_dir = output_dir
+    #     )
+    #     # Resume processing in case of failure
+    #     if (.raster_is_valid(block_file)) {
+    #         return(block_file)
+    #     }
+    #
+    #
+    #
+    #
+    #     # Read and preprocess values from files
+    #     values <- .classify_data_read(
+    #         tile = tile,
+    #         block = block,
+    #         bands = bands,
+    #         base_bands = base_bands,
+    #         ml_model = ml_model,
+    #         impute_fn = impute_fn,
+    #         filter_fn = filter_fn
+    #     )
+    #
+    # }, progress = progress)
+
+
     # Merge blocks into a new probs_cube tile
     # If ROI exists, blocks are merged to a different directory
     # than output_dir, which is used to save the final cropped version

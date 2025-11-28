@@ -321,46 +321,56 @@ sits_tempcnn <- function(samples = NULL,
         serialized_model <- .torch_serialize_model(torch_model[["model"]])
 
         # Function that predicts labels of input values
-        predict_fun <- function(values) {
-            # Verifies if torch package is installed
-            .check_require_packages("torch")
-            # Set torch threads to 1
-            suppressWarnings(torch::torch_set_num_threads(1L))
-            # Unserialize model
-            torch_model[["model"]] <- .torch_unserialize_model(serialized_model)
-            # Transform input into a 3D tensor
-            # Reshape the 2D matrix into a 3D array
-            n_samples <- nrow(values)
-            n_times <- .samples_ntimes(samples)
-            n_bands <- length(bands)
-            # Performs data normalization
-            values <- .pred_normalize(pred = values, stats = ml_stats)
-            # Represent matrix values as array
-            values <- array(
-                data = as.matrix(values), dim = c(n_samples, n_times, n_bands)
-            )
-            # GPU or CPU classification?
-            if (.torch_gpu_classification()) {
-                # Get batch size
-                batch_size <- sits_env[["batch_size"]]
-                # Transform the input array to a dataset
-                values <- .torch_as_dataset(values)
-                # Transform to dataloader to use the batch size
-                values <- torch::dataloader(values, batch_size = batch_size)
-                # Do GPU classification
-                values <- .try(
-                    stats::predict(object = torch_model, values),
-                    .msg_error = .conf("messages", ".check_gpu_memory_size")
+        predict_fun <- function(dataloader, callback, values = NULL) {
+            if (!is.null(values)) {
+                # Verifies if torch package is installed
+                .check_require_packages("torch")
+                # Set torch threads to 1
+                suppressWarnings(torch::torch_set_num_threads(1L))
+                # Unserialize model
+                torch_model[["model"]] <- .torch_unserialize_model(serialized_model)
+                # Transform input into a 3D tensor
+                # Reshape the 2D matrix into a 3D array
+                n_samples <- nrow(values)
+                n_times <- .samples_ntimes(samples)
+                n_bands <- length(bands)
+                # Performs data normalization
+                values <- .pred_normalize(pred = values, stats = ml_stats)
+                # Represent matrix values as array
+                values <- array(
+                    data = as.matrix(values), dim = c(n_samples, n_times, n_bands)
                 )
+                # GPU or CPU classification?
+                if (.torch_gpu_classification()) {
+                    # Get batch size
+                    batch_size <- sits_env[["batch_size"]]
+                    # Transform the input array to a dataset
+                    values <- .torch_as_dataset(values)
+                    # Transform to dataloader to use the batch size
+                    values <- torch::dataloader(values, batch_size = batch_size)
+                    # Do GPU classification
+                    values <- .try(
+                        stats::predict(object = torch_model, values),
+                        .msg_error = .conf("messages", ".check_gpu_memory_size")
+                    )
+                } else {
+                    # Do CPU classification
+                    values <- stats::predict(object = torch_model, values)
+                }
+                # Convert from tensor to array
+                values <- torch::as_array(values)
+                # Update the columns names to labels
+                colnames(values) <- sample_labels
+                values
             } else {
-                # Do CPU classification
-                values <- stats::predict(object = torch_model, values)
+                values <- stats::predict(object = torch_model, dataloader)
+                # Convert from tensor to array
+                values <- torch::as_array(values)
+                # Update the columns names to labels
+                colnames(values) <- sample_labels
+
+                callback(values, torch_model)
             }
-            # Convert from tensor to array
-            values <- torch::as_array(values)
-            # Update the columns names to labels
-            colnames(values) <- sample_labels
-            values
         }
         # Set model class
         predict_fun <- .set_class(
