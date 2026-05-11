@@ -23,11 +23,15 @@ test_that("Creating WORLD-COVER-2021 cubes from TERRASCOPE", {
 
     expect_true(all(sits_bands(class_cube) %in% c("class")))
     expect_equal(nrow(class_cube), 4)
+
     bbox_cube <- sits_bbox(class_cube, as_crs = "EPSG:4326")
     bbox_cube_1 <- sits_bbox(.tile(class_cube), as_crs = "EPSG:4326")
+
     expect_true(bbox_cube["xmax"] >= bbox_cube_1["xmax"])
     expect_true(bbox_cube["ymax"] >= bbox_cube_1["ymax"])
+
     rast <- .raster_open_rast(class_cube$file_info[[1]]$path[1])
+
     cube_nrows <- .tile_nrows(class_cube)
     expect_true(.raster_nrows(rast) == cube_nrows)
 })
