@@ -3118,6 +3118,54 @@
     .check_lgl_parameter(verbose)
 }
 
+#' @title Pre-conditions for the SITS-BERT pretraining method
+#' @name .check_pre_sits_bert
+#' @keywords internal
+#' @noRd
+#' @return No value, called for side effects.
+.check_pre_sits_bert <- function(samples,
+                                 epochs,
+                                 batch_size,
+                                 encoder,
+                                 decoder_width,
+                                 masking_method,
+                                 mask_ratio,
+                                 noise_frac,
+                                 noised_bands,
+                                 bands_prefix,
+                                 verbose) {
+    # Pre-conditions:
+    .check_samples_pre_train(samples)
+    .check_int_parameter(epochs, min = 1L, max = 1000L)
+    .check_int_parameter(batch_size, min = 16L, max = 2048L)
+    .check_that(is.function(encoder))
+    .check_int_parameter(decoder_width, min = 1L)
+    .check_chr_within(
+        x = masking_method,
+        within = c("random", "contiguous", "mixed"),
+        msg = .conf("message", "sits_bert_invalid_masking_method")
+    )
+    .check_chr(noised_bands,
+        allow_empty = FALSE,
+        len_min = 1L,
+        allow_null = TRUE
+    )
+    if (!is.null(noised_bands)) {
+        .check_length(intersect(noised_bands, .samples_bands(samples)),
+            len_min = 1L,
+            msg = .conf("message", "sits_bert_invalid_noised_bands")
+        )
+    }
+    .check_num_parameter(mask_ratio, min = 0.0, max = 1.0)
+    .check_num_parameter(noise_frac, min = 0.0)
+    .check_chr_parameter(
+        x = bands_prefix,
+        allow_empty = FALSE,
+        len_min = 1L
+    )
+    .check_lgl_parameter(verbose)
+}
+
 #' @title Check for block object consistency
 #' @name .check_raster_block
 #' @keywords internal
