@@ -55,9 +55,9 @@
 #'   \item Masked autoencoder:
 #'     \code{\link[sits]{sits_mae}}.
 #'   \item Barlow Twins self-supervised encoder:
-#'     \code{\link[sits]{sits_barlow_twins_network}}.
+#'     \code{\link[sits]{sits_barlow_twins}}.
 #'   \item Contrastive (triplet-based) encoder:
-#'     \code{\link[sits]{sits_contrastive_network}}.
+#'     \code{\link[sits]{sits_contrastive_learning}}.
 #' }
 #'
 #' For detailed examples and usage, see the \pkg{sits} documentation at
@@ -407,7 +407,7 @@ sits_encode.raster_cube <- function(data,
     on.exit(.encode_verbose_end(verbose, start_time), add = TRUE)
     # Classification
     # Process each tile sequentially
-    .cube_foreach_tile(data, function(tile) {
+    emb_cube <- .cube_foreach_tile(data, function(tile) {
         # encode the data
         .encode_tile(
             tile = tile,
@@ -424,6 +424,7 @@ sits_encode.raster_cube <- function(data,
             progress = progress
         )
     })
+    .cube_set_class(emb_cube, c("embeddings_cube", class(emb_cube)))
 }
 
 #' @rdname sits_encode

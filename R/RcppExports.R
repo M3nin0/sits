@@ -9,6 +9,10 @@ weighted_uncert_probs <- function(data_lst, unc_lst) {
     .Call(`_sits_weighted_uncert_probs`, data_lst, unc_lst)
 }
 
+dtw2vec_cpp <- function(x, y) {
+    .Call(`_sits_dtw2vec_cpp`, x, y)
+}
+
 C_glcm_contrast <- function(x, angles, nrows, ncols, n_grey, window_size) {
     .Call(`_sits_C_glcm_contrast`, x, angles, nrows, ncols, n_grey, window_size)
 }
@@ -231,6 +235,14 @@ C_max_sampling <- function(x, nrows, ncols, window_size) {
 
 bayes_var <- function(m, m_nrow, m_ncol, w, neigh_fraction) {
     .Call(`_sits_bayes_var`, m, m_nrow, m_ncol, w, neigh_fraction)
+}
+
+segment_variance <- function(logits, ids, n_segments, neigh_fraction) {
+    .Call(`_sits_segment_variance`, logits, ids, n_segments, neigh_fraction)
+}
+
+segment_bayes <- function(logits, ids, n_segments, neigh_fraction, smoothness) {
+    .Call(`_sits_segment_bayes`, logits, ids, n_segments, neigh_fraction, smoothness)
 }
 
 bayes_smoother_fraction <- function(logits, nrows, ncols, window_size, smoothness, neigh_fraction) {

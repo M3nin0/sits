@@ -75,6 +75,7 @@ Suggests:
     cli,
     cols4all (>= 0.8.0),
     covr,
+    DBI,
     dendextend,
     dtwclust,
     digest,
@@ -84,7 +85,9 @@ Suggests:
     FNN,
     gdalcubes (>= 0.7.0),
     geojsonsf,
+    ggalluvial,
     ggplot2,
+    IncDTW,
     jsonlite,
     kohonen (>= 3.0.11),
     lightgbm,
@@ -130,6 +133,7 @@ Collate:
     'api_combine_predictions.R'
     'api_comp.R'
     'api_conf.R'
+    'api_contrastive_learning.R'
     'api_crop.R'
     'api_csv.R'
     'api_cube.R'
@@ -171,6 +175,7 @@ Collate:
     'api_request_httr2.R'
     'api_roi.R'
     'api_samples.R'
+    'api_sankey.R'
     'api_segments.R'
     'api_select.R'
     'api_sf.R'
@@ -196,6 +201,7 @@ Collate:
     'api_source_terrascope.R'
     'api_source_usgs.R'
     'api_space_time_operations.R'
+    'api_ssl_barlow_twins.R'
     'api_stac.R'
     'api_stats.R'
     'api_summary.R'
@@ -230,6 +236,7 @@ Collate:
     'sits_colors.R'
     'sits_combine_predictions.R'
     'sits_config.R'
+    'sits_contrastive_learning.R'
     'sits_csv.R'
     'sits_cube.R'
     'sits_cube_copy.R'
@@ -269,11 +276,13 @@ Collate:
     'sits_regularize.R'
     'sits_resnet.R'
     'sits_sample_functions.R'
+    'sits_sankey.R'
     'sits_segmentation.R'
     'sits_select.R'
     'sits_sf.R'
     'sits_smooth.R'
     'sits_som.R'
+    'sits_ssl_barlow_twins.R'
     'sits_stars.R'
     'sits_summary.R'
     'sits_tae.R'

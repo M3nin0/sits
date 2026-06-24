@@ -52,9 +52,6 @@
 #'   improvement).
 #' @param min_delta      Numeric. Minimum improvement required to reset
 #'   the patience counter.
-#' @param bands_prefix   Character. Prefix used to name the embedding
-#'   dimensions in the output (e.g., \code{"EMB"} → \code{EMB1}, \code{EMB2},
-#'   …).
 #' @param verbose        Logical. Print training progress?
 #' @param seed           Integer. Random seed for reproducibility.
 #'
@@ -86,35 +83,37 @@
 #' }
 #'
 #' @export
-sits_barlow_twins<- function(samples          = NULL,
-                             embedding_dim    = 64L,
-                             proj_dim         = 256L,
-                             bt_lambda        = 5e-3,
-                             pair_smp_method  = "label",
-                             num_pairs        = NULL,
-                             encoder_model    = sits_tempcnn(),
-                             epochs           = 150L,
-                             batch_size       = 128L,
-                             validation_split = 0.2,
-                             optimizer        = torch::optim_adamw,
-                             opt_hparams = list(
-                                 lr           = 5.0e-04,
-                                 eps          = 1.0e-08,
-                                 weight_decay = 1.0e-06
-                             ),
-                             lr_decay_epochs  = 1L,
-                             lr_decay_rate    = 0.95,
-                             patience         = 20L,
-                             min_delta        = 0.01,
-                             bands_prefix     = "EMB",
-                             verbose          = FALSE,
-                             seed             = 10L) {
+sits_barlow_twins <- function(samples          = NULL,
+                              embedding_dim    = 64L,
+                              proj_dim         = 256L,
+                              bt_lambda        = 5e-3,
+                              pair_smp_method  = "label",
+                              num_pairs        = NULL,
+                              encoder_model    = sits_lighttae(),
+                              epochs           = 150L,
+                              batch_size       = 128L,
+                              validation_split = 0.2,
+                              optimizer        = torch::optim_adamw,
+                              opt_hparams = list(
+                                  lr           = 5.0e-04,
+                                  eps          = 1.0e-08,
+                                  weight_decay = 1.0e-06
+                              ),
+                              lr_decay_epochs  = 1L,
+                              lr_decay_rate    = 0.95,
+                              patience         = 20L,
+                              min_delta        = 0.01,
+                              verbose          = FALSE,
+                              seed             = 10L) {
     # set caller for error msg
     .check_set_caller("sits_barlow_twins")
     # Verifies if 'torch' and 'luz' packages are installed
     .check_require_packages(c("torch", "luz"))
     # documentation mode? verbose is FALSE
     verbose <- .message_verbose(verbose)
+    # Band prefix for embeddings
+    bands_prefix = .conf("embedding_band_prefix")
+    .check_chr(bands_prefix, len_min = 1, lan_max = 1, allow_empty = FALSE)
     # Function that trains a torch model based on samples
     train_fun <- function(samples) {
         # does not support working with DEM or other base data
@@ -124,7 +123,7 @@ sits_barlow_twins<- function(samples          = NULL,
         # Avoid adding a global variable for 'self'
         self <- NULL
         # Pre-conditions
-        .check_pre_sits_contrastive_net(
+        .check_pre_sits_barlow_twins(
             samples         = samples,
             epochs          = epochs,
             batch_size      = batch_size,
