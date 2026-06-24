@@ -257,6 +257,10 @@ softmax <- function(values) {
     .Call(`_sits_softmax`, values)
 }
 
+C_twdtw_distances <- function(values, patterns, query_doy, pattern_doy, n_bands, dist_power, weight_type, alpha, beta, a, b) {
+    .Call(`_sits_C_twdtw_distances`, values, patterns, query_doy, pattern_doy, n_bands, dist_power, weight_type, alpha, beta, a, b)
+}
+
 C_entropy_probs <- function(x) {
     .Call(`_sits_C_entropy_probs`, x)
 }

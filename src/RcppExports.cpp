@@ -875,6 +875,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_twdtw_distances
+NumericMatrix C_twdtw_distances(const NumericMatrix& values, const List& patterns, const NumericVector& query_doy, const List& pattern_doy, int n_bands, double dist_power, int weight_type, double alpha, double beta, double a, double b);
+RcppExport SEXP _sits_C_twdtw_distances(SEXP valuesSEXP, SEXP patternsSEXP, SEXP query_doySEXP, SEXP pattern_doySEXP, SEXP n_bandsSEXP, SEXP dist_powerSEXP, SEXP weight_typeSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type values(valuesSEXP);
+    Rcpp::traits::input_parameter< const List& >::type patterns(patternsSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type query_doy(query_doySEXP);
+    Rcpp::traits::input_parameter< const List& >::type pattern_doy(pattern_doySEXP);
+    Rcpp::traits::input_parameter< int >::type n_bands(n_bandsSEXP);
+    Rcpp::traits::input_parameter< double >::type dist_power(dist_powerSEXP);
+    Rcpp::traits::input_parameter< int >::type weight_type(weight_typeSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_twdtw_distances(values, patterns, query_doy, pattern_doy, n_bands, dist_power, weight_type, alpha, beta, a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_entropy_probs
 arma::mat C_entropy_probs(const arma::mat& x);
 RcppExport SEXP _sits_C_entropy_probs(SEXP xSEXP) {
@@ -974,6 +995,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sits_smooth_whit", (DL_FUNC) &_sits_smooth_whit, 3},
     {"_sits_smooth_whit_mtx", (DL_FUNC) &_sits_smooth_whit_mtx, 3},
     {"_sits_softmax", (DL_FUNC) &_sits_softmax, 1},
+    {"_sits_C_twdtw_distances", (DL_FUNC) &_sits_C_twdtw_distances, 11},
     {"_sits_C_entropy_probs", (DL_FUNC) &_sits_C_entropy_probs, 1},
     {"_sits_C_margin_probs", (DL_FUNC) &_sits_C_margin_probs, 1},
     {"_sits_C_least_probs", (DL_FUNC) &_sits_C_least_probs, 1},
