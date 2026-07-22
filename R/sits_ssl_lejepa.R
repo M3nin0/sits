@@ -340,20 +340,11 @@ sits_ssl_lejepa <- function(samples          = NULL,
             )
             # Encode!
             if (use_gpu) {
-                # Get multicores
-                multicores <- sits_env[["multicores"]]
-                # Transform dataset into a dataloader
-                block_dataloader <- torch::dataloader(
+                # Predict! GPU memory is bounded per forward pass
+                values <- .torch_predict_chunks(
+                    torch_model = torch_model,
                     dataset = values[["dataset"]],
-                    num_workers = multicores,
-                    batch_size = 1L
-                )
-                # Predict!
-                values <- stats::predict(
-                    object = torch_model,
-                    newdata = block_dataloader,
-                    callbacks = list(values[["callback"]]),
-                    stack = FALSE
+                    callback = values[["callback"]]
                 )
             } else {
                 # Transform input into a 3D tensor

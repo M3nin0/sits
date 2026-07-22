@@ -3,6 +3,17 @@
 # What's new in SITS version 1.5
 
 ### New features in SITS version 1.5.5 (development)
+* Bound GPU memory during classification and encoding by the number of rows
+  sent to the model in each forward pass. Data cube blocks are still read and
+  written as a whole, but are now sent to the GPU in slices of `batch_size`
+  rows, so that large blocks no longer exhaust the graphics card. When the
+  requested `batch_size` does not fit, `sits` halves it and retries.
+* `batch_size` now controls GPU memory in `sits_classify()` and
+  `sits_encode()` - it previously had no effect - and defaults to 32768 rows.
+  It is unrelated to the (much smaller) `batch_size` used to train a model.
+* Deprecate `gpu_memory` in `sits_classify()`, `sits_encode()`,
+  `sits_kfold_validate()`, `sits_validate()` and `sits_tuning()`. The
+  parameter is no longer used; `batch_size` replaces it.
 * Add opt-in streaming GPU pipeline for `sits_classify()` and `sits_encode()`
   raster workflows (`SITS_GPU_PIPELINE=stream` + suggested package `siphon`):
   chunk reads, GPU inference and block writes run as overlapped pull-based

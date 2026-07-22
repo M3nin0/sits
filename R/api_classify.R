@@ -1064,14 +1064,14 @@
 #' @param  ml_model   Model trained by \code{\link[sits]{sits_train}}.
 #' @param  impute_fn  Imputation function (to remove NA)
 #' @param  multicores number of threads to process the time series.
-#' @param  gpu_memory Memory available in GPU
+#' @param  batch_size Number of rows sent to the GPU in each forward pass
 #' @param  progress   Show progress bar?
 #' @return A tibble with the predicted labels.
 .classify_ts <- function(samples,
                          ml_model,
                          impute_fn,
                          multicores,
-                         gpu_memory,
+                         batch_size,
                          progress) {
     # Prepare parallel processing
     started <- .parallel_start(workers = multicores)
@@ -1125,7 +1125,7 @@
         prediction <- .classify_ts_gpu(
             pred = pred,
             ml_model = ml_model,
-            gpu_memory = gpu_memory
+            batch_size = batch_size
         )
     } else {
         prediction <- .classify_ts_cpu(
@@ -1215,15 +1215,13 @@
 #'
 #' @param  pred       a tibble with predictors
 #' @param  ml_model   model trained by \code{\link[sits]{sits_train}}.
-#' @param  gpu_memory memory available in GPU
+#' @param  batch_size number of rows sent to the GPU in each forward pass
 #' @return A tibble with the predicted values.
 .classify_ts_gpu <- function(pred,
                              ml_model,
-                             gpu_memory) {
-    # estimate size of GPU memory required (in GB)
-    pred_size <- nrow(pred) * ncol(pred) * 8.0 / 1000000000.0
-    # estimate how should we partition the predictors
-    num_parts <- ceiling(pred_size / gpu_memory)
+                             batch_size) {
+    # partition the predictors so that each part fits in the GPU
+    num_parts <- ceiling(nrow(pred) / batch_size)
     # Divide samples predictors in chunks to parallel processing
     parts <- .pred_create_partition(
         pred = pred,

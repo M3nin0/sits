@@ -103,8 +103,10 @@ sits_classify <- function(data, ml_model, ...) {
 #' @param  impute_fn         Imputation function to remove NA.
 #' @param  multicores        Number of cores to be used for classification
 #'                           (integer, min = 1, max = 2048).
-#' @param  gpu_memory        Memory available in GPU in GB (default = 4)
-#' @param  batch_size        Batch size for GPU classification.
+#' @param  gpu_memory        Deprecated and no longer used - GPU memory is
+#'                           bounded by \code{batch_size}.
+#' @param  batch_size        Number of rows sent to the GPU in each forward
+#'                           pass (default = 32768).
 #' @param  progress          Logical: Show progress bar?
 #'
 #' @return                   Time series with predicted labels for
@@ -119,12 +121,18 @@ sits_classify <- function(data, ml_model, ...) {
 #'    Parameter \code{multicores}  defines the number of cores
 #'    used for processing. We recommend using as much memory as possible.
 #'
-#'    When using a GPU for deep learning, \code{gpu_memory} indicates the
-#'    memory of the graphics card which is available for processing.
-#'    The parameter \code{batch_size} defines the size of the matrix
-#'    (measured in number of rows) which is sent to the GPU for classification.
-#'    Users can test different values of \code{batch_size} to
-#'    find out which one best fits their GPU architecture.
+#'    When using a GPU for deep learning, the parameter \code{batch_size}
+#'    defines the size of the matrix (measured in number of rows) which is
+#'    sent to the GPU in each forward pass. This is what bounds the GPU
+#'    memory used: a data cube block is read and written as a whole, but is
+#'    sent to the model in slices of \code{batch_size} rows, so that only
+#'    the activations of one slice are held in the graphics card at a time.
+#'
+#'    Do not confuse this parameter with the \code{batch_size} used to
+#'    train a model, which is much smaller. Values in the order of
+#'    \code{2^15} are a good starting point; larger values increase
+#'    throughput at the cost of GPU memory. If the requested value does not
+#'    fit, sits halves it and retries, reporting a warning.
 #'
 #'    It is not possible to have an exact idea of the size of Deep Learning
 #'    models in GPU memory, as the complexity of the model and factors
@@ -134,9 +142,8 @@ sits_classify <- function(data, ml_model, ...) {
 #'
 #'    For users of Apple M3 chips or similar with a Neural Engine, be
 #'    aware that these chips share memory between the GPU and the CPU.
-#'    Tests indicate that the \code{memsize}
-#'    should be set to half to the total memory and the \code{batch_size}
-#'    parameter should be a small number (we suggest the value of 64).
+#'    Tests indicate that the \code{memsize} should be set to half of the
+#'    total memory and that \code{batch_size} should be reduced.
 #'    Be aware that increasing these parameters may lead to memory
 #'    conflicts.
 #' @examples
@@ -160,15 +167,18 @@ sits_classify.sits <- function(data,
                                impute_fn = impute_linear(),
                                multicores = 2L,
                                gpu_memory = 4L,
-                               batch_size = 2L^gpu_memory,
+                               batch_size = 2L^15L,
                                progress = TRUE) {
     # set caller for error messages
     .check_set_caller("sits_classify_sits")
+    # gpu_memory is no longer used - batch_size bounds the GPU memory
+    .check_gpu_memory_deprecated(!missing(gpu_memory))
     # Pre-conditions
     .check_samples_ts(data)
     .check_is_sits_model(ml_model)
     .check_model_has_stats(ml_model)
     .check_int_parameter(multicores, min = 1L, max = 2048L)
+    .check_batch_size(batch_size)
     progress <- .message_progress(progress)
     .check_function(impute_fn)
     # save batch_size for later use
@@ -186,7 +196,7 @@ sits_classify.sits <- function(data,
         ml_model = ml_model,
         impute_fn = impute_fn,
         multicores = multicores,
-        gpu_memory = gpu_memory,
+        batch_size = batch_size,
         progress = progress
     )
 }
@@ -220,8 +230,10 @@ sits_classify.sits <- function(data,
 #'                           (integer, min = 1, max = 16384).
 #' @param  multicores        Number of cores to be used for classification
 #'                           (integer, min = 1, max = 2048).
-#' @param  gpu_memory        Memory available in GPU in GB (default = 4)
-#' @param  batch_size        Batch size for GPU classification.
+#' @param  gpu_memory        Deprecated and no longer used - GPU memory is
+#'                           bounded by \code{batch_size}.
+#' @param  batch_size        Number of rows sent to the GPU in each forward
+#'                           pass (default = 32768).
 #' @param  output_dir        Directory for output file.
 #' @param  version           Version of the output.
 #' @param  verbose           Logical: print information about processing time?
@@ -257,12 +269,18 @@ sits_classify.sits <- function(data,
 #'    Either a path to a shapefile with polygons or
 #'    a \code{sf} object with POLYGON or MULTIPOLYGON geometry;
 #'
-#'    When using a GPU for deep learning, \code{gpu_memory} indicates the
-#'    memory of the graphics card which is available for processing.
-#'    The parameter \code{batch_size} defines the size of the matrix
-#'    (measured in number of rows) which is sent to the GPU for classification.
-#'    Users can test different values of \code{batch_size} to
-#'    find out which one best fits their GPU architecture.
+#'    When using a GPU for deep learning, the parameter \code{batch_size}
+#'    defines the size of the matrix (measured in number of rows) which is
+#'    sent to the GPU in each forward pass. This is what bounds the GPU
+#'    memory used: a data cube block is read and written as a whole, but is
+#'    sent to the model in slices of \code{batch_size} rows, so that only
+#'    the activations of one slice are held in the graphics card at a time.
+#'
+#'    Do not confuse this parameter with the \code{batch_size} used to
+#'    train a model, which is much smaller. Values in the order of
+#'    \code{2^15} are a good starting point; larger values increase
+#'    throughput at the cost of GPU memory. If the requested value does not
+#'    fit, sits halves it and retries, reporting a warning.
 #'
 #'    It is not possible to have an exact idea of the size of Deep Learning
 #'    models in GPU memory, as the complexity of the model and factors
@@ -272,9 +290,8 @@ sits_classify.sits <- function(data,
 #'
 #'    For users of Apple M3 chips or similar with a Neural Engine, be
 #'    aware that these chips share memory between the GPU and the CPU.
-#'    Tests indicate that the \code{memsize}
-#'    should be set to half to the total memory and the \code{batch_size}
-#'    parameter should be a small number (we suggest the value of 64).
+#'    Tests indicate that the \code{memsize} should be set to half of the
+#'    total memory and that \code{batch_size} should be reduced.
 #'    Be aware that increasing these parameters may lead to memory
 #'    conflicts.
 #'
@@ -318,13 +335,15 @@ sits_classify.raster_cube <- function(data,
                                       memsize = 8L,
                                       multicores = 2L,
                                       gpu_memory = 4L,
-                                      batch_size = 2L^gpu_memory,
+                                      batch_size = 2L^15L,
                                       output_dir,
                                       version = "v1",
                                       verbose = FALSE,
                                       progress = TRUE) {
     # set caller for error messages
     .check_set_caller("sits_classify_raster")
+    # gpu_memory is no longer used - batch_size bounds the GPU memory
+    .check_gpu_memory_deprecated(!missing(gpu_memory))
     # preconditions
     .check_is_raster_cube(data)
     .check_cube_is_regular(data)
@@ -332,7 +351,7 @@ sits_classify.raster_cube <- function(data,
     .check_model_has_stats(ml_model)
     .check_num_parameter(memsize, exclusive_min = 0)
     .check_int_parameter(multicores, min = 1L)
-    .check_int_parameter(gpu_memory, min = 1L)
+    .check_batch_size(batch_size)
     .check_output_dir(output_dir)
     # preconditions - impute and filter functions
     .check_function(impute_fn)
@@ -359,6 +378,8 @@ sits_classify.raster_cube <- function(data,
     )
     # save multicores for later use
     sits_env[["multicores"]] <- multicores
+    # save batch_size for later use
+    sits_env[["batch_size"]] <- batch_size
 
     # Retrieve the samples from the model
     samples <- .ml_samples(ml_model)
@@ -547,8 +568,10 @@ sits_classify.raster_cube <- function(data,
 #'                           (integer, min = 1, max = 16384).
 #' @param  multicores        Number of cores to be used for classification
 #'                           (integer, min = 1, max = 2048).
-#' @param  gpu_memory        Memory available in GPU in GB (default = 4)
-#' @param  batch_size        Batch size for GPU classification.
+#' @param  gpu_memory        Deprecated and no longer used - GPU memory is
+#'                           bounded by \code{batch_size}.
+#' @param  batch_size        Number of rows sent to the GPU in each forward
+#'                           pass (default = 32768).
 #' @param  n_sam_pol         Deprecated. Segment-level classification is no
 #'                           longer performed by \code{sits_classify()}.
 #'                           Use \code{sits_label_classification()} for
@@ -584,12 +607,18 @@ sits_classify.raster_cube <- function(data,
 #'    for classification, while \code{multicores}  defines the number of cores
 #'    used for processing. We recommend using as much memory as possible.
 #'
-#'    When using a GPU for deep learning, \code{gpu_memory} indicates the
-#'    memory of the graphics card which is available for processing.
-#'    The parameter \code{batch_size} defines the size of the matrix
-#'    (measured in number of rows) which is sent to the GPU for classification.
-#'    Users can test different values of \code{batch_size} to
-#'    find out which one best fits their GPU architecture.
+#'    When using a GPU for deep learning, the parameter \code{batch_size}
+#'    defines the size of the matrix (measured in number of rows) which is
+#'    sent to the GPU in each forward pass. This is what bounds the GPU
+#'    memory used: a data cube block is read and written as a whole, but is
+#'    sent to the model in slices of \code{batch_size} rows, so that only
+#'    the activations of one slice are held in the graphics card at a time.
+#'
+#'    Do not confuse this parameter with the \code{batch_size} used to
+#'    train a model, which is much smaller. Values in the order of
+#'    \code{2^15} are a good starting point; larger values increase
+#'    throughput at the cost of GPU memory. If the requested value does not
+#'    fit, sits halves it and retries, reporting a warning.
 #'
 #'    It is not possible to have an exact idea of the size of Deep Learning
 #'    models in GPU memory, as the complexity of the model and factors
@@ -599,9 +628,8 @@ sits_classify.raster_cube <- function(data,
 #'
 #'    For users of Apple M3 chips or similar with a Neural Engine, be
 #'    aware that these chips share memory between the GPU and the CPU.
-#'    Tests indicate that the \code{memsize}
-#'    should be set to half to the total memory and the \code{batch_size}
-#'    parameter should be a small number (we suggest the value of 64).
+#'    Tests indicate that the \code{memsize} should be set to half of the
+#'    total memory and that \code{batch_size} should be reduced.
 #'    Be aware that increasing these parameters may lead to memory
 #'    conflicts.
 #'
@@ -656,7 +684,7 @@ sits_classify.vector_cube <- function(data,
                                       memsize = 8L,
                                       multicores = 2L,
                                       gpu_memory = 4L,
-                                      batch_size = 2L^gpu_memory,
+                                      batch_size = 2L^15L,
                                       output_dir,
                                       version = "v1",
                                       n_sam_pol = NULL,
@@ -664,6 +692,8 @@ sits_classify.vector_cube <- function(data,
                                       progress = TRUE) {
     # set caller for error messages
     .check_set_caller("sits_classify_vector_cube")
+    # gpu_memory is no longer used - batch_size bounds the GPU memory
+    .check_gpu_memory_deprecated(!missing(gpu_memory))
     # Deprecation warning for n_sam_pol
     if (.has(n_sam_pol)) {
         warning(.conf("messages", "sits_classify_n_sam_pol_deprecated"),
@@ -676,7 +706,7 @@ sits_classify.vector_cube <- function(data,
     .check_model_has_stats(ml_model)
     .check_int_parameter(memsize, min = 1L, max = 16384L)
     .check_int_parameter(multicores, min = 1L, max = 2048L)
-    .check_int_parameter(gpu_memory, min = 1L)
+    .check_batch_size(batch_size)
     .check_output_dir(output_dir)
     # preconditions - impute and filter functions
     .check_function(impute_fn)
@@ -686,7 +716,7 @@ sits_classify.vector_cube <- function(data,
     progress <- .message_progress(progress)
     # documentation mode? verbose is FALSE
     verbose <- .message_verbose(verbose)
-    # save GPU memory info for later use
+    # save batch_size for later use
     sits_env[["batch_size"]] <- batch_size
 
     # Spatial filter

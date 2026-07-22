@@ -15,7 +15,7 @@
   memsize = 8L,
   multicores = 2L,
   gpu_memory = 4L,
-  batch_size = 2L^gpu_memory,
+  batch_size = 2L^15L,
   output_dir,
   verbose = FALSE,
   progress = TRUE
@@ -54,10 +54,11 @@ Defaults to the cube end date.}
 \item{multicores}{Integer. Number of CPU cores used for processing
 (minimum 1).}
 
-\item{gpu_memory}{Integer. GPU memory available for encoding in GB
-(minimum 1).}
+\item{gpu_memory}{Deprecated and no longer used - GPU memory is bounded
+by \code{batch_size}.}
 
-\item{batch_size}{Integer. Batch size used when encoding on GPU.}
+\item{batch_size}{Integer. Number of rows sent to the GPU in each forward
+pass (default = 32768).}
 
 \item{output_dir}{Directory where output files will be written.}
 
@@ -92,15 +93,15 @@ provided.
 
 The \code{memsize} and \code{multicores} parameters are used to
 determine an optimal block size and safe parallelism level. When GPU
-encoding is available and supported by the encoder, \code{gpu_memory}
-and \code{batch_size} influence how predictor matrices are partitioned
-for GPU execution.
+encoding is available and supported by the encoder, \code{batch_size}
+sets how many rows are sent to the GPU in each forward pass. A block is
+read and written as a whole, but is sent to the encoder in slices of
+\code{batch_size} rows, which is what bounds the GPU memory used.
 
 It is recommended to leave at least 1 GB of free GPU memory to
 accommodate model and runtime overhead. On systems with unified
-CPU/GPU memory (e.g., Apple M-series), conservative settings for
-\code{gpu_memory} and \code{batch_size} may be required to avoid memory
-contention.
+CPU/GPU memory (e.g., Apple M-series), a conservative \code{batch_size}
+may be required to avoid memory contention.
 }
 \examples{
 if (sits_run_examples()) {

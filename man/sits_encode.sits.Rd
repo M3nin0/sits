@@ -11,7 +11,7 @@
   impute_fn = impute_linear(),
   multicores = 2L,
   gpu_memory = 4L,
-  batch_size = 2L^gpu_memory,
+  batch_size = 2L^15L,
   progress = TRUE
 )
 }
@@ -31,9 +31,11 @@ values in each time series (default:
 \item{multicores}{Integer. Number of CPU cores used for processing
 (minimum 1, maximum 2048).}
 
-\item{gpu_memory}{Numeric. GPU memory available for encoding (in GB).}
+\item{gpu_memory}{Deprecated and no longer used - GPU memory is bounded
+by \code{batch_size}.}
 
-\item{batch_size}{Integer. Batch size used when encoding on GPU.}
+\item{batch_size}{Integer. Number of rows sent to the GPU in each forward
+pass (default = 32768).}
 
 \item{progress}{Logical. If \code{TRUE}, show a progress bar.}
 }
@@ -55,14 +57,15 @@ function used to interpolate missing values. Users may provide custom
 functions that follow the same contract.
 
 The encoding backend is selected automatically. When GPU execution is
-available and the encoder supports it, \code{gpu_memory} and
-\code{batch_size} control how predictors are partitioned and sent to
-the GPU. It is recommended to leave at least 1 GB of free GPU memory
-for model and runtime overhead.
+available and the encoder supports it, \code{batch_size} controls how
+many rows are sent to the GPU in each forward pass, bounding the GPU
+memory used. Do not confuse it with the \code{batch_size} used to train
+an encoder, which is much smaller. It is recommended to leave at least
+1 GB of free GPU memory for model and runtime overhead.
 
-On systems with unified CPU/GPU memory (e.g., Apple M-series),
-conservative settings for \code{gpu_memory} and \code{batch_size} may
-be required to avoid memory contention.
+On systems with unified CPU/GPU memory (e.g., Apple M-series), a
+conservative \code{batch_size} may be required to avoid memory
+contention.
 }
 \examples{
 if (sits_run_examples()) {

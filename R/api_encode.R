@@ -469,7 +469,7 @@
                        encoder,
                        impute_fn,
                        multicores,
-                       gpu_memory,
+                       batch_size,
                        progress) {
     # Prepare parallel processing
     started <- .parallel_start(workers = multicores)
@@ -522,7 +522,7 @@
         prediction <- .encode_ts_gpu(
             pred = pred,
             encoder = encoder,
-            gpu_memory = gpu_memory
+            batch_size = batch_size
         )
     } else {
         prediction <- .encode_ts_cpu(
@@ -608,19 +608,17 @@
 #' @param pred Tibble with predictor data derived from \pkg{sits} samples.
 #' @param encoder Encoder trained by
 #'   \code{\link[sits]{sits_pre_train}}.
-#' @param gpu_memory Numeric. Available GPU memory (in GB) used to size
-#'   predictor partitions.
+#' @param batch_size Number of rows sent to the GPU in each forward pass,
+#'   used to size predictor partitions.
 #'
 #' @return
 #' A tibble with encoded predictor values (embeddings).
 #'
 #' @keywords internal
 #' @noRd
-.encode_ts_gpu <- function(pred, encoder, gpu_memory) {
-    # estimate size of GPU memory required (in GB)
-    pred_size <- nrow(pred) * ncol(pred) * 8.0 / 1000000000.0
-    # estimate how should we partition the predictors
-    num_parts <- ceiling(pred_size / gpu_memory)
+.encode_ts_gpu <- function(pred, encoder, batch_size) {
+    # partition the predictors so that each part fits in the GPU
+    num_parts <- ceiling(nrow(pred) / batch_size)
     # Divide samples predictors in chunks to parallel processing
     parts <- .pred_create_partition(
         pred = pred,

@@ -1396,6 +1396,35 @@
     .check_set_caller(".check_processed_labels")
     .check_that(ncol(values) == n_labels)
 }
+#' @title Is the batch size used for GPU processing valid?
+#' @name .check_batch_size
+#' @param batch_size number of rows sent to the GPU in each forward pass
+#' @return Called for side effects.
+#' @keywords internal
+#' @noRd
+.check_batch_size <- function(batch_size) {
+    # Values in the range used for training (64 - 128) are a common
+    # mistake here, and make GPU processing extremely slow
+    .check_int_parameter(
+        batch_size,
+        min = .conf("torch_min_batch_size"),
+        msg = .conf("messages", ".check_batch_size")
+    )
+}
+#' @title Warn that gpu_memory is deprecated
+#' @name .check_gpu_memory_deprecated
+#' @param supplied was gpu_memory informed by the user?
+#' @return Called for side effects.
+#' @keywords internal
+#' @noRd
+.check_gpu_memory_deprecated <- function(supplied) {
+    if (supplied) {
+        warning(.conf("messages", "sits_gpu_memory_deprecated"),
+            call. = FALSE
+        )
+    }
+    invisible(NULL)
+}
 #' @title Prepare default message for invalid parameter
 #' @title Prepare default message for variable
 #' @title Does the input data contain a set of predicted values?

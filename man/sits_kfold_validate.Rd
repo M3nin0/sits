@@ -11,7 +11,7 @@ sits_kfold_validate(
   impute_fn = impute_linear(),
   multicores = 2L,
   gpu_memory = 4L,
-  batch_size = 2L^gpu_memory,
+  batch_size = 2L^15L,
   progress = TRUE
 )
 }
@@ -26,9 +26,11 @@ sits_kfold_validate(
 
 \item{multicores}{Number of cores to process in parallel.}
 
-\item{gpu_memory}{Memory available in GPU in GB (default = 4)}
+\item{gpu_memory}{Deprecated and no longer used - GPU memory is
+bounded by \code{batch_size}.}
 
-\item{batch_size}{Batch size for GPU classification.}
+\item{batch_size}{Number of rows sent to the GPU in each forward
+pass (default = 32768).}
 
 \item{progress}{Logical: Show progress bar?}
 }

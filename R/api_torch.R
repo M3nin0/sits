@@ -758,6 +758,202 @@
     }
 )
 
+#' @title Concatenate the outputs of a set of forward passes
+#' @name .torch_cat_outputs
+#' @keywords internal
+#' @noRd
+#' @description Rebuilds a single model output from the outputs of the
+#' row slices produced by \code{.torch_module_bounded}. Modules may return
+#' either a tensor or a list of tensors; both are handled.
+#'
+#' @param values List of outputs, one per row slice.
+#'
+#' @return A tensor, or a list of tensors, with the slices concatenated.
+#'
+.torch_cat_outputs <- function(values) {
+    # A single slice needs no concatenation
+    if (length(values) == 1L) {
+        return(values[[1L]])
+    }
+    # Modules returning a list are concatenated element by element
+    if (is.list(values[[1L]])) {
+        return(purrr::map(seq_along(values[[1L]]), function(i) {
+            torch::torch_cat(
+                purrr::map(values, function(value) value[[i]]),
+                dim = 1L
+            )
+        }))
+    }
+    torch::torch_cat(values, dim = 1L)
+}
+
+#' @title Verify if an error was caused by GPU memory exhaustion
+#' @name .torch_error_is_oom
+#' @keywords internal
+#' @noRd
+#' @description Identifies out-of-memory conditions raised by the torch
+#' backend, which are reported as generic runtime errors.
+#'
+#' @param e Condition raised by a forward pass.
+#'
+#' @return TRUE/FALSE
+#'
+.torch_error_is_oom <- function(e) {
+    grepl("out of memory", conditionMessage(e), ignore.case = TRUE)
+}
+
+#' @title Torch module bounded by GPU memory
+#' @name .torch_module_bounded
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @keywords internal
+#' @noRd
+#' @description Wraps a trained torch module so that each forward pass
+#' processes at most \code{batch_size} rows.
+#'
+#' A chunk produced by \code{\link{.torch_chunks_dataset}} is sized by the
+#' sits block logic, which accounts for host memory and raster block
+#' geometry, not for GPU memory. Sending a whole chunk to the model in a
+#' single forward pass allocates activations for every pixel at once, which
+#' exhausts the GPU on large blocks. This module keeps the chunk as the
+#' unit of I/O and of block writing, while bounding the GPU footprint to
+#' the activations of a single row slice.
+#'
+#' Slicing happens after NA pixels are filtered out, so slices are plain
+#' row ranges and the output is rebuilt by concatenation.
+#'
+#' @param module     Trained torch module.
+#' @param batch_size Maximum number of rows per forward pass.
+#'
+#' @return A torch module.
+#'
+.torch_module_bounded <- torch::nn_module(
+    "torch_module_bounded",
+    initialize = function(module, batch_size) {
+        self$module <- module
+        self$batch_size <- batch_size
+    },
+    # luz calls the `predict` method of a module when it defines one, and
+    # its `forward` method otherwise (see luz:::predict.luz_module_fitted).
+    # Resolve the same function the unwrapped module would have used
+    module_fn = function() {
+        if (is.null(self$module$predict)) {
+            return(self$module)
+        }
+        self$module$predict
+    },
+    # Run the model over row slices of at most `batch_size` rows
+    forward_batched = function(module_fn, values, batch_size) {
+        n_rows <- values$shape[[1L]]
+        starts <- seq.int(1L, n_rows, by = batch_size)
+        # Slices are views over the input, so no data is copied here
+        outputs <- purrr::map(starts, function(start) {
+            module_fn(values$narrow(
+                dim = 1L,
+                start = start,
+                length = min(batch_size, n_rows - start + 1L)
+            ))
+        })
+        .torch_cat_outputs(outputs)
+    },
+    forward_bounded = function(module_fn, values) {
+        # Inputs that already fit go straight to the model. This also
+        # preserves the behaviour of an unwrapped module for empty chunks,
+        # which happen when a block has no valid pixels
+        if (values$shape[[1L]] <= self$batch_size) {
+            return(module_fn(values))
+        }
+        batch_size <- self$batch_size
+        min_batch_size <- .conf("torch_min_batch_size")
+        repeat {
+            output <- tryCatch(
+                self$forward_batched(module_fn, values, batch_size),
+                error = function(e) {
+                    # Only GPU exhaustion is recoverable here
+                    if (!.torch_error_is_oom(e) ||
+                        batch_size <= min_batch_size) {
+                        stop(e)
+                    }
+                    NULL
+                }
+            )
+            if (!is.null(output)) {
+                return(output)
+            }
+            # The requested batch_size does not fit in the GPU: halve it,
+            # release the cached blocks and try again
+            batch_size <- max(batch_size %/% 2L, min_batch_size)
+            warning(.conf("messages", ".torch_module_bounded"),
+                batch_size,
+                call. = FALSE
+            )
+            torch::cuda_empty_cache()
+        }
+    },
+    forward = function(values) {
+        self$forward_bounded(self$module, values)
+    },
+    # Always defined, so that luz routes through the dispatch above
+    predict = function(values) {
+        self$forward_bounded(self$module_fn(), values)
+    }
+)
+
+#' @title Number of rows sent to the GPU in each forward pass
+#' @name .torch_batch_size
+#' @keywords internal
+#' @noRd
+#' @description Retrieves the batch size defined by the user in
+#' \code{\link[sits]{sits_classify}} or \code{\link[sits]{sits_encode}}.
+#' Falls back to the default when a model is used outside those functions.
+#'
+#' @return Number of rows per forward pass.
+#'
+.torch_batch_size <- function() {
+    .default(sits_env[["batch_size"]], .conf("torch_batch_size"))
+}
+
+#' @title Predict chunks of a data cube in the GPU
+#' @name .torch_predict_chunks
+#' @author Felipe Carlos, \email{efelipecarlos@@gmail.com}
+#' @keywords internal
+#' @noRd
+#' @description Runs a trained torch model over a chunk dataset, writing
+#' each block from the post-processing callback.
+#'
+#' Each item of the dataloader is one chunk, and each chunk produces one
+#' block file. This is why the dataloader \code{batch_size} is always 1:
+#' collating more than one chunk into a batch would break the
+#' one-block-per-batch contract of the callback. The number of rows sent
+#' to the GPU at a time is bounded by \code{\link{.torch_module_bounded}}
+#' instead.
+#'
+#' @param torch_model Trained luz model.
+#' @param dataset     Chunk dataset, see \code{.torch_chunks_dataset}.
+#' @param callback    Post-processing callback which writes each block.
+#'
+#' @return List of block files written by the callback.
+#'
+.torch_predict_chunks <- function(torch_model, dataset, callback) {
+    # Bound the GPU memory used by each forward pass
+    torch_model$model <- .torch_module_bounded(
+        module = torch_model$model,
+        batch_size = .torch_batch_size()
+    )
+    # One chunk per batch - see note above
+    block_dataloader <- torch::dataloader(
+        dataset = dataset,
+        num_workers = .default(sits_env[["multicores"]], 1L),
+        batch_size = 1L
+    )
+    # Predict!
+    stats::predict(
+        object = torch_model,
+        newdata = block_dataloader,
+        callbacks = list(callback),
+        stack = FALSE
+    )
+}
+
 .callback_post_encode <- luz::luz_callback(
     name = ".callback_post_encode",
     initialize = function(output_dir, out_bands, out_files, band_conf, crs,

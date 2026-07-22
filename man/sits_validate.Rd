@@ -10,7 +10,7 @@ sits_validate(
   validation_split = 0.2,
   ml_method = sits_rfor(),
   gpu_memory = 4L,
-  batch_size = 2L^gpu_memory
+  batch_size = 2L^15L
 )
 }
 \arguments{
@@ -25,9 +25,11 @@ for validation if samples_validation is NULL
 
 \item{ml_method}{Machine learning method (function)}
 
-\item{gpu_memory}{Memory available in GPU in GB (default = 4)}
+\item{gpu_memory}{Deprecated and no longer used - GPU memory is
+bounded by \code{batch_size}.}
 
-\item{batch_size}{Batch size for GPU classification.}
+\item{batch_size}{Number of rows sent to the GPU in each forward
+pass (default = 32768).}
 }
 \value{
 A \code{caret::confusionMatrix} object to be used for
@@ -49,12 +51,18 @@ the validation test set.
 This function returns the confusion matrix, and Kappa values.
 }
 \note{
-When using a GPU for deep learning, \code{gpu_memory} indicates the
-   memory of the graphics card which is available for processing.
-   The parameter \code{batch_size} defines the size of the matrix
-   (measured in number of rows) which is sent to the GPU for classification.
-   Users can test different values of \code{batch_size} to
-   find out which one best fits their GPU architecture.
+When using a GPU for deep learning, the parameter \code{batch_size}
+   defines the size of the matrix (measured in number of rows) which is
+   sent to the GPU in each forward pass. This is what bounds the GPU
+   memory used: a data cube block is read and written as a whole, but is
+   sent to the model in slices of \code{batch_size} rows, so that only
+   the activations of one slice are held in the graphics card at a time.
+
+   Do not confuse this parameter with the \code{batch_size} used to
+   train a model, which is much smaller. Values in the order of
+   \code{2^15} are a good starting point; larger values increase
+   throughput at the cost of GPU memory. If the requested value does not
+   fit, sits halves it and retries, reporting a warning.
 
    It is not possible to have an exact idea of the size of Deep Learning
    models in GPU memory, as the complexity of the model and factors
@@ -64,9 +72,8 @@ When using a GPU for deep learning, \code{gpu_memory} indicates the
 
    For users of Apple M3 chips or similar with a Neural Engine, be
    aware that these chips share memory between the GPU and the CPU.
-   Tests indicate that the \code{memsize}
-   should be set to half to the total memory and the \code{batch_size}
-   parameter should be a small number (we suggest the value of 64).
+   Tests indicate that the \code{memsize} should be set to half of the
+   total memory and that \code{batch_size} should be reduced.
    Be aware that increasing these parameters may lead to memory
    conflicts.
 }

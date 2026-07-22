@@ -29,8 +29,10 @@
 #' @param ml_method          Machine learning method.
 #' @param  impute_fn         Imputation function to remove NA.
 #' @param multicores         Number of cores to process in parallel.
-#' @param  gpu_memory        Memory available in GPU in GB (default = 4)
-#' @param  batch_size        Batch size for GPU classification.
+#' @param  gpu_memory        Deprecated and no longer used - GPU memory is
+#'                           bounded by \code{batch_size}.
+#' @param  batch_size        Number of rows sent to the GPU in each forward
+#'                           pass (default = 32768).
 #' @param  progress          Logical: Show progress bar?
 #'
 #' @return A \code{caret::confusionMatrix} object to be used for
@@ -66,16 +68,19 @@ sits_kfold_validate <- function(samples,
                                 impute_fn = impute_linear(),
                                 multicores = 2L,
                                 gpu_memory = 4L,
-                                batch_size = 2L^gpu_memory,
+                                batch_size = 2L^15L,
                                 progress = TRUE) {
     # set caller to show in errors
     .check_set_caller("sits_kfold_validate")
+    # gpu_memory is no longer used - batch_size bounds the GPU memory
+    .check_gpu_memory_deprecated(!missing(gpu_memory))
     # require package
     .check_require_packages("caret")
     # pre-condition
     .check_that(inherits(ml_method, "function"))
     # pre-condition
     .check_int_parameter(multicores, min = 1L, max = 2048L)
+    .check_batch_size(batch_size)
     # show progress bar?
     progress <- .message_progress(progress)
     # save batch size for later
@@ -109,7 +114,7 @@ sits_kfold_validate <- function(samples,
             ml_model = ml_model,
             impute_fn = impute_fn,
             multicores = multicores,
-            gpu_memory = gpu_memory,
+            batch_size = batch_size,
             progress = progress
         )
         pred <- tidyr::unnest(values, "predicted")[["class"]]
@@ -149,12 +154,18 @@ sits_kfold_validate <- function(samples,
 #' This function returns the confusion matrix, and Kappa values.
 #'
 #' @note
-#'    When using a GPU for deep learning, \code{gpu_memory} indicates the
-#'    memory of the graphics card which is available for processing.
-#'    The parameter \code{batch_size} defines the size of the matrix
-#'    (measured in number of rows) which is sent to the GPU for classification.
-#'    Users can test different values of \code{batch_size} to
-#'    find out which one best fits their GPU architecture.
+#'    When using a GPU for deep learning, the parameter \code{batch_size}
+#'    defines the size of the matrix (measured in number of rows) which is
+#'    sent to the GPU in each forward pass. This is what bounds the GPU
+#'    memory used: a data cube block is read and written as a whole, but is
+#'    sent to the model in slices of \code{batch_size} rows, so that only
+#'    the activations of one slice are held in the graphics card at a time.
+#'
+#'    Do not confuse this parameter with the \code{batch_size} used to
+#'    train a model, which is much smaller. Values in the order of
+#'    \code{2^15} are a good starting point; larger values increase
+#'    throughput at the cost of GPU memory. If the requested value does not
+#'    fit, sits halves it and retries, reporting a warning.
 #'
 #'    It is not possible to have an exact idea of the size of Deep Learning
 #'    models in GPU memory, as the complexity of the model and factors
@@ -164,9 +175,8 @@ sits_kfold_validate <- function(samples,
 #'
 #'    For users of Apple M3 chips or similar with a Neural Engine, be
 #'    aware that these chips share memory between the GPU and the CPU.
-#'    Tests indicate that the \code{memsize}
-#'    should be set to half to the total memory and the \code{batch_size}
-#'    parameter should be a small number (we suggest the value of 64).
+#'    Tests indicate that the \code{memsize} should be set to half of the
+#'    total memory and that \code{batch_size} should be reduced.
 #'    Be aware that increasing these parameters may lead to memory
 #'    conflicts.
 #'
@@ -177,8 +187,10 @@ sits_kfold_validate <- function(samples,
 #'                           for validation if samples_validation is NULL
 #'                           (numeric value).
 #' @param  ml_method         Machine learning method (function)
-#' @param  gpu_memory        Memory available in GPU in GB (default = 4)
-#' @param  batch_size        Batch size for GPU classification.
+#' @param  gpu_memory        Deprecated and no longer used - GPU memory is
+#'                           bounded by \code{batch_size}.
+#' @param  batch_size        Number of rows sent to the GPU in each forward
+#'                           pass (default = 32768).
 #'
 #' @return A \code{caret::confusionMatrix} object to be used for
 #'         validation assessment.
@@ -204,9 +216,11 @@ sits_validate <- function(samples,
                           validation_split = 0.2,
                           ml_method = sits_rfor(),
                           gpu_memory = 4L,
-                          batch_size = 2L^gpu_memory) {
+                          batch_size = 2L^15L) {
     # set caller to show in errors
     .check_set_caller("sits_validate")
+    # gpu_memory is no longer used - batch_size bounds the GPU memory
+    .check_gpu_memory_deprecated(!missing(gpu_memory))
     # require package
     .check_require_packages("caret")
     # check samples
