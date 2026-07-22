@@ -990,11 +990,11 @@
             crs = self$crs
         )
         # Log end of block
-        .debug_log(
-            event = "end_block_data_encode",
-            key = "model",
-            value = "torch_model"
-        )
+        # .debug_log(
+        #     event = "end_block_data_encode",
+        #     key = "model",
+        #     value = "torch_model"
+        # )
 
         if (length(input_pixels) > 0L) {
             # apply offset
@@ -1013,11 +1013,11 @@
             values[values < min_value] <- min_value
         }
         # Log end of block
-        .debug_log(
-            event = "end_block_data_encoding",
-            key = "model",
-            value = .ml_class(encoder)
-        )
+        # .debug_log(
+        #     event = "end_block_data_encoding",
+        #     key = "model",
+        #     value = .ml_class(encoder)
+        # )
         full_values <- matrix(
             NA_real_,
             nrow = length(na_mask),
