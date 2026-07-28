@@ -126,7 +126,7 @@
             read_fn = .encode_data_read,
             bands = bands,
             base_bands = base_bands,
-            stats = .ml_features_name(encoder),
+            stats = .ml_stats(encoder),
             ml_features_name = .ml_features_name(encoder),
             ml_temporal_model = .ml_torch_is_temporal(encoder),
             impute_fn = impute_fn,
@@ -165,27 +165,19 @@
             output_dir = file.path(output_dir, ".sits")
         )
     }
-    # Merge list where each index represents one chunk
+    # Merge list where each index represents one chunk and holds a vector
+    # of block files (one per embedding band, in `out_bands` order)
     block_files <- c(recovered_files, new_files)
-    # Each index element represents the same embedding dimension
-    block_files <- purrr::transpose(block_files)
-    # For each embedding dimension add output band and file
-    block_files <- purrr::map(seq_along(block_files), function(ind) {
-        list(
-            block_file = block_files[[ind]],
-            out_band = out_bands[[ind]],
-            merge_out_file = merge_out_files[[ind]]
-        )
-    })
-    embedding_bands <- .parallel_map(
-        x = block_files,
-        fn = .encode_merge_blocks,
+    # Merge all bands into a single embeddings tile (one tile, many bands)
+    embedding_tile <- .tile_eo_merge_blocks(
+        files = merge_out_files,
+        bands = out_bands,
         band_conf = band_conf,
-        tile = tile,
-        update_bbox = update_bbox,
-        progress = FALSE
+        base_tile = tile,
+        block_files = block_files,
+        multicores = .jobs_multicores(),
+        update_bbox = update_bbox
     )
-    embedding_tile <- dplyr::bind_rows(embedding_bands)
     # if there is a ROI, crop the embeddings cube
     if (.has(roi)) {
         embedding_tile_crop <- .crop(
@@ -868,29 +860,6 @@
 #' @param  encoder    Encoder model
 .encode_embedding_dim <- function(encoder) {
     environment(encoder)[["embedding_dim"]]
-}
-#' @title Read a block of values from a set of raster images
-#' @name .encode_merge_blocks
-#' @keywords internal
-#' @noRd
-#' @description
-#' Merge the output blocks for writing in parallel
-#' @param  data             List of output files and bands
-#' @param  band_conf        Band configuration parameters
-#' @param  tile             Input data tile
-#' @param  update_bbox      Should bbox be updated?
-#'
-.encode_merge_blocks <- function(data, band_conf, tile, update_bbox) {
-    # create the embedded tiles
-    embedding_tile <- .tile_eo_merge_blocks(
-        files = data$merge_out_file,
-        bands = data$out_band,
-        band_conf = band_conf,
-        base_tile = tile,
-        block_files = data$block_file,
-        multicores = .jobs_multicores(),
-        update_bbox = update_bbox
-    )
 }
 #' @title Encode a chunk of data on CPU
 #' @author Rolf Simoes, \email{rolfsimoes@@gmail.com}
